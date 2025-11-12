@@ -1,58 +1,75 @@
-// src/components/MainNav.jsx
-import React from "react";
-import {
-  Navbar,
-  Nav,
-  Container,
-  Form,
-  InputGroup,
-  Button,
-  FormControl,
-} from "react-bootstrap";
+import React, { useState } from "react";
+import { Container, Form, InputGroup, FormControl, Dropdown } from "react-bootstrap";
+import './MainNav.css';
 
 function MainNav() {
+  const [showDropdown, setShowDropdown] = useState(false);
+
   return (
-    <Navbar expand="lg" className="main-navbar" variant="dark">
-      <Container>
-        <Navbar.Toggle aria-controls="main-navbar-nav" />
-        <Navbar.Collapse id="main-navbar-nav">
-          <Nav className="me-auto">
-            <Nav.Link href="#home" className="fw-bold">
+    <div className="main-nav">
+      <Container fluid>
+        <div className="nav-content d-flex align-items-center justify-content-between">
+          <div className="nav-left d-flex align-items-center">
+            <a href="/" className="nav-item nav-item-home active">
               TRANG CHỦ
-            </Nav.Link>
-            <Nav.Link href="#products" className="fw-bold">
-              SẢN PHẨM
-            </Nav.Link>
-            <Nav.Link href="#news" className="fw-bold">
+            </a>
+
+            <Dropdown
+              show={showDropdown}
+              onMouseEnter={() => setShowDropdown(true)}
+              onMouseLeave={() => setShowDropdown(false)}
+              className="nav-dropdown"
+            >
+              <Dropdown.Toggle as="a" className="nav-item nav-item-dropdown">
+                SẢN PHẨM
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                <Dropdown.Item href="#san-pham-tu-vit">Sản phẩm tủ vịt</Dropdown.Item>
+                <Dropdown.Item href="#san-pham-tu-ga">Sản phẩm tủ gà</Dropdown.Item>
+                <Dropdown.Item href="#san-pham-tu-heo">Sản phẩm tủ heo</Dropdown.Item>
+                <Dropdown.Item href="#san-pham-tu-ngan">Sản phẩm tủ ngán</Dropdown.Item>
+                <Dropdown.Item href="#san-pham-tu-ca">Sản phẩm tủ cá</Dropdown.Item>
+                <Dropdown.Item href="#hai-san">Hải sản</Dropdown.Item>
+                <Dropdown.Item href="#cac-loai-hat">Các loại hạt</Dropdown.Item>
+                <Dropdown.Item href="#cac-loai-ruou">Các loại rượu</Dropdown.Item>
+                <Dropdown.Item href="#thuc-pham-khac">Thực phẩm khác</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+
+            <a href="/tin-tuc" className="nav-item">
               TIN TỨC
-            </Nav.Link>
-            <Nav.Link href="#about" className="fw-bold">
+            </a>
+            <a href="/gioi-thieu" className="nav-item">
               GIỚI THIỆU
-            </Nav.Link>
-            <Nav.Link href="#recruit" className="fw-bold">
+            </a>
+            <a href="/tuyen-dai-ly" className="nav-item">
               TUYỂN ĐẠI LÝ
-            </Nav.Link>
-            <Nav.Link href="#contact" className="fw-bold">
+            </a>
+            <a href="/lien-he" className="nav-item">
               LIÊN HỆ
-            </Nav.Link>
-          </Nav>
-          {/* Ô Tìm kiếm */}
-          <Form className="d-flex">
-            <InputGroup>
-              <FormControl
-                type="search"
-                placeholder="Tìm kiếm..."
-                aria-label="Search"
-                style={{ width: "180px" }}
-              />
-              <Button variant="light">
-                <i className="bi bi-search">🔍</i>
-              </Button>
-            </InputGroup>
-          </Form>
-        </Navbar.Collapse>
+            </a>
+          </div>
+
+          <div className="nav-right">
+            <Form className="search-form">
+              <InputGroup>
+                <FormControl
+                  type="search"
+                  placeholder="Tìm kiếm..."
+                  className="search-input"
+                />
+                <button className="search-btn" type="submit">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="m21 21-4.35-4.35"/>
+                  </svg>
+                </button>
+              </InputGroup>
+            </Form>
+          </div>
+        </div>
       </Container>
-    </Navbar>
+    </div>
   );
 }
 

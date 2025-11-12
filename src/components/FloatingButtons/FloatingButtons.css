@@ -1,0 +1,100 @@
+.floating-buttons {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 1000;
+}
+
+.floating-btn {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  text-decoration: none;
+  animation: bounce 2s infinite;
+}
+
+.floating-btn:hover {
+  transform: scale(1.1) translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  animation: none;
+}
+
+.zalo-btn {
+  background: linear-gradient(135deg, #0068FF, #0084FF);
+}
+
+.zalo-btn:hover {
+  background: linear-gradient(135deg, #0052CC, #0068FF);
+}
+
+.messenger-btn {
+  background: linear-gradient(135deg, #0084FF, #00C6FF);
+}
+
+.messenger-btn:hover {
+  background: linear-gradient(135deg, #0068FF, #0084FF);
+}
+
+.phone-btn {
+  background: linear-gradient(135deg, #7CB342, #8BC34A);
+}
+
+.phone-btn:hover {
+  background: linear-gradient(135deg, #689F38, #7CB342);
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+@media (max-width: 768px) {
+  .floating-buttons {
+    right: 15px;
+    bottom: 15px;
+    gap: 10px;
+  }
+
+  .floating-btn {
+    width: 50px;
+    height: 50px;
+  }
+
+  .floating-btn svg {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media (max-width: 576px) {
+  .floating-buttons {
+    right: 10px;
+    bottom: 10px;
+  }
+
+  .floating-btn {
+    width: 45px;
+    height: 45px;
+  }
+
+  .floating-btn svg {
+    width: 28px;
+    height: 28px;
+  }
+}

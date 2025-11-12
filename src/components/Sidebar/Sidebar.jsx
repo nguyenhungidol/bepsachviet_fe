@@ -1,39 +1,42 @@
-// src/components/Sidebar.jsx
-import React from "react";
-import { ListGroup } from "react-bootstrap";
+import React, { useState } from "react";
+import './Sidebar.css';
 
 const categories = [
-  "Sản phẩm từ vịt",
-  "Sản phẩm từ gà",
-  "Sản phẩm từ heo",
-  "Sản phẩm từ ngan",
-  "Sản phẩm từ cá",
+  "Sản phẩm tủ vịt",
+  "Sản phẩm tủ gà",
+  "Sản phẩm tủ heo",
+  "Sản phẩm tủ ngán",
+  "Sản phẩm tủ cá",
   "Hải sản",
   "Các loại hạt",
-  "Các loại ruốc",
+  "Các loại rượu",
   "Thực phẩm khác",
 ];
 
 function Sidebar() {
-  return (
-    <div>
-      {/* Header Danh mục */}
-      <div className="sidebar-header">🌱 DANH MỤC SẢN PHẨM</div>
+  const [activeIndex, setActiveIndex] = useState(0);
 
-      {/* Danh sách */}
-      <ListGroup className="sidebar-menu">
+  return (
+    <div className="sidebar">
+      <div className="sidebar-header">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="white" className="me-2">
+          <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+        </svg>
+        DANH MỤC SẢN PHẨM
+      </div>
+
+      <div className="sidebar-menu">
         {categories.map((cat, index) => (
-          <ListGroup.Item
+          <a
             key={index}
-            action
             href={`#${cat.replace(/\s/g, "-").toLowerCase()}`}
-            // Chỉ định mục đầu tiên 'Sản phẩm từ vịt' là active (tô màu chữ và border trái)
-            className={index === 0 ? "active" : ""}
+            className={`sidebar-item ${index === activeIndex ? "active" : ""}`}
+            onClick={() => setActiveIndex(index)}
           >
             {cat}
-          </ListGroup.Item>
+          </a>
         ))}
-      </ListGroup>
+      </div>
     </div>
   );
 }
