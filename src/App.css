@@ -1,57 +1,63 @@
-/* src/App.css */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-/* Định nghĩa màu sắc thương hiệu */
 :root {
-  --primary-green: #1a8700;
-  --text-green: #409006;
+  --primary-green: #28a745;
+  --secondary-green: #20c997;
+  --primary-orange: #FF9800;
+  --text-dark: #333;
+  --text-light: #666;
+  --border-color: #e0e0e0;
+  --bg-light: #f5f5f5;
 }
 
-/* Thanh Navbar */
-.main-navbar {
-  background-color: var(--primary-green) !important;
-  font-size: 14px;
-  padding-top: 0;
-  padding-bottom: 0;
-}
-.main-navbar .nav-link {
-  padding-top: 15px !important;
-  padding-bottom: 15px !important;
-  text-transform: uppercase;
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f5f5f5;
+  color: var(--text-dark);
 }
 
-/* Header Top */
-.header-top {
-  font-size: 13px;
-  color: #6c757d; /* Màu text-muted của Bootstrap */
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Sidebar Danh mục */
-.sidebar-header {
-  background-color: var(--primary-green);
-  color: white;
-  font-weight: bold;
-  padding: 10px 15px;
-  border-radius: 5px 5px 0 0;
-}
-.sidebar-menu .list-group-item {
-  font-size: 15px;
-  border-left: 3px solid transparent;
-  border-top: none;
-  border-right: none;
-}
-.sidebar-menu .list-group-item:hover,
-.sidebar-menu .list-group-item.active {
-  color: var(--text-green);
-  border-left: 3px solid var(--text-green);
-  background-color: #f8f9fa; /* Màu nền nhẹ khi hover/active */
-  font-weight: 500;
+a {
+  text-decoration: none;
+  color: inherit;
 }
 
-/* Sứ mệnh (Phần cuối trang) */
-.footer-mission {
-  font-size: 15px;
-  color: #333;
-  padding: 20px 0;
-  margin-top: 20px;
-  border-top: 1px solid #eee;
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+.container-fluid {
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+}
+
+.dropdown-toggle::after {
+  display: inline-block;
+  margin-left: 0.255em;
+  vertical-align: 0.255em;
+  content: "";
+  border-top: 0.3em solid;
+  border-right: 0.3em solid transparent;
+  border-bottom: 0;
+  border-left: 0.3em solid transparent;
 }

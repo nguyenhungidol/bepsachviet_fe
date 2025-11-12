@@ -1,0 +1,33 @@
+.top-bar {
+  background-color: #28a745;
+  color: white;
+  padding: 8px 0;
+  font-size: 14px;
+}
+
+.top-bar a {
+  color: white;
+  transition: opacity 0.3s;
+}
+
+.top-bar a:hover {
+  opacity: 0.8;
+}
+
+.hotline-info,
+.address-info {
+  display: flex;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .top-bar-left {
+    flex-direction: column;
+    gap: 0.5rem !important;
+    font-size: 12px;
+  }
+
+  .address-info {
+    display: none;
+  }
+}
