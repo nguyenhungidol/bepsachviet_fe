@@ -1,0 +1,57 @@
+/* src/App.css */
+
+/* Định nghĩa màu sắc thương hiệu */
+:root {
+  --primary-green: #1a8700;
+  --text-green: #409006;
+}
+
+/* Thanh Navbar */
+.main-navbar {
+  background-color: var(--primary-green) !important;
+  font-size: 14px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.main-navbar .nav-link {
+  padding-top: 15px !important;
+  padding-bottom: 15px !important;
+  text-transform: uppercase;
+}
+
+/* Header Top */
+.header-top {
+  font-size: 13px;
+  color: #6c757d; /* Màu text-muted của Bootstrap */
+}
+
+/* Sidebar Danh mục */
+.sidebar-header {
+  background-color: var(--primary-green);
+  color: white;
+  font-weight: bold;
+  padding: 10px 15px;
+  border-radius: 5px 5px 0 0;
+}
+.sidebar-menu .list-group-item {
+  font-size: 15px;
+  border-left: 3px solid transparent;
+  border-top: none;
+  border-right: none;
+}
+.sidebar-menu .list-group-item:hover,
+.sidebar-menu .list-group-item.active {
+  color: var(--text-green);
+  border-left: 3px solid var(--text-green);
+  background-color: #f8f9fa; /* Màu nền nhẹ khi hover/active */
+  font-weight: 500;
+}
+
+/* Sứ mệnh (Phần cuối trang) */
+.footer-mission {
+  font-size: 15px;
+  color: #333;
+  padding: 20px 0;
+  margin-top: 20px;
+  border-top: 1px solid #eee;
+}
