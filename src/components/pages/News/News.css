@@ -1,0 +1,123 @@
+:root {
+  --primary-green: #1d7a3d;
+  --dark-green: #14592a;
+  --link-hover: #ff9900;
+}
+
+/* --- Tổng quan trang --- */
+.news-page .sidebar-heading {
+  background-color: var(--primary-green) !important;
+  font-size: 18px;
+  font-weight: bold;
+}
+.sidebar-heading.bg-success-dark {
+  background-color: var(--dark-green) !important;
+}
+
+.sidebar-list a {
+  color: #333;
+  padding: 5px 0;
+  display: block;
+  border-bottom: 1px dashed #eee;
+}
+.sidebar-list a:hover {
+  color: var(--primary-green);
+  text-decoration: none;
+}
+
+/* --- Tin nổi bật --- */
+.featured-news-item {
+  color: #333;
+  transition: color 0.2s;
+  border-bottom: 1px dashed #eee;
+  padding-bottom: 8px;
+  padding-top: 8px;
+}
+.featured-news-item:hover {
+  color: var(--primary-green);
+}
+.featured-news-img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+.featured-news-title {
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+/* --- Có thể bạn sẽ thích (Sản phẩm) --- */
+.related-product-card {
+  color: #333;
+  border: 1px solid #f0f0f0;
+  border-radius: 4px;
+  padding: 8px;
+  background-color: #fff;
+}
+.related-product-card:hover {
+  border-color: var(--primary-green);
+  box-shadow: 0 0 5px rgba(29, 122, 61, 0.2);
+}
+.related-product-img {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+.related-product-name {
+  font-size: 14px;
+  font-weight: bold;
+}
+.related-product-price {
+  color: #c00;
+  font-weight: bold;
+}
+
+/* --- Danh sách Bài viết chính --- */
+.article-card {
+  border-color: #e0e0e0 !important;
+}
+.article-img {
+  width: 250px; /* Chiều rộng cố định cho ảnh */
+  height: 180px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+.article-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--primary-green);
+  margin-bottom: 10px;
+}
+.article-excerpt {
+  font-size: 15px;
+  color: #555;
+  line-height: 1.5;
+  /* Giới hạn text 3 dòng */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.btn-read-more {
+  color: var(--link-hover);
+  font-weight: bold;
+  text-decoration: none;
+}
+
+/* Responsive */
+@media (max-width: 767px) {
+  .article-card {
+    flex-direction: column;
+  }
+  .article-img {
+    width: 100%;
+    height: auto;
+    margin-bottom: 15px;
+  }
+  .article-img.me-4 {
+    margin-right: 0 !important;
+  }
+}

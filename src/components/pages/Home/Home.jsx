@@ -1,10 +1,10 @@
 import { Container, Row, Col } from "react-bootstrap";
-import Sidebar from "../Sidebar/Sidebar";
-import Banner from "../Banner/Banner";
+import Sidebar from "./Sidebar/Sidebar";
+import Banner from "./Banner/Banner";
 import "./Home.css";
-import AboutUsContent from "./AboutUsContent";
-import ProductSection from "../ProductSection/ProductSection";
-import NewsAndCertificatesSection from "../NewsAndCertificatesSection/NewsAndCertificatesSection";
+import AboutUsContent from "./AboutUsContent/AboutUsContent";
+import ProductSection from "./ProductSection/ProductSection";
+import NewsAndCertificatesSection from "./NewsAndCertificatesSection/NewsAndCertificatesSection";
 
 function Home() {
   return (
