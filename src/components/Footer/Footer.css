@@ -1,0 +1,222 @@
+/* Màu sắc chính dựa trên hình ảnh */
+:root {
+  --main-green: #1d7a3d; /* Xanh lá đậm chính */
+  --dark-green: #14592a; /* Xanh lá cực đậm cho copyright */
+  --text-color: #fff; /* Màu chữ trắng */
+  --link-hover: #f0f0f0; /* Màu khi hover */
+}
+
+/* Phần Footer chính */
+.footer-main-section {
+  background-color: var(--main-green);
+  color: var(--text-color);
+  padding: 40px 0;
+  position: relative; /* Cho các nút nổi */
+}
+
+/* Tiêu đề cột */
+.footer-heading {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3); /* Đường gạch dưới tiêu đề */
+  padding-bottom: 10px;
+}
+
+/* Văn bản liên hệ */
+.footer-contact-text {
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+/* Danh sách liên hệ và liên kết */
+.footer-contact-list li,
+.footer-link-list li {
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.footer-contact-list i {
+  margin-right: 8px;
+  font-size: 16px;
+  color: #ffd700; /* Màu vàng cho icon */
+}
+
+.footer-link-list a {
+  color: var(--text-color);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-link-list a:hover {
+  color: var(--link-hover);
+}
+
+.footer-link-list i.bi-chevron-down {
+  font-size: 10px; /* Icon mũi tên xuống */
+  margin-left: 5px;
+}
+
+/* Phần Fanpage Placeholder */
+.footer-fanpage-box {
+  background-color: #fff; /* Nền trắng như trong ảnh */
+  padding: 10px;
+  border-radius: 4px;
+  color: #333; /* Màu chữ tối */
+}
+
+.fanpage-placeholder {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.fanpage-logo {
+  width: 50px;
+  height: 50px;
+  border-radius: 4px;
+}
+
+.fanpage-name {
+  font-weight: bold;
+  font-size: 15px;
+  margin-bottom: 0;
+  line-height: 1.2;
+}
+
+.fanpage-likes {
+  font-size: 12px;
+  color: #606770;
+  margin-top: -5px;
+}
+
+.fanpage-follow-btn {
+  background-color: #4267b2; /* Màu xanh Facebook */
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.fanpage-follow-btn i {
+  margin-right: 5px;
+}
+
+.fanpage-posts-preview {
+  /* Điều chỉnh vị trí của phần ảnh nhỏ bên phải */
+  margin-left: auto; /* Đẩy sang phải */
+}
+
+.fanpage-posts-preview img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+/* Phần Copyright */
+.footer-copyright-section {
+  background-color: var(--dark-green);
+  color: var(--text-color);
+  padding: 15px 0;
+  font-size: 14px;
+}
+
+.copyright-text {
+  margin-bottom: 0;
+}
+
+.copyright-links li {
+  display: inline-block;
+  margin-left: 15px;
+}
+
+.copyright-links a {
+  color: var(--text-color);
+  text-decoration: none;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.copyright-links a:hover {
+  color: var(--link-hover);
+}
+
+/* Nút nổi và Nút cuộn lên đầu trang */
+.floating-buttons {
+  position: fixed;
+  right: 20px;
+  bottom: 120px; /* Đặt phía trên nút cuộn lên đầu trang */
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.floating-buttons a {
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 24px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  text-decoration: none;
+}
+
+.btn-scroll-top {
+  /* Đảm bảo định vị cố định để nó luôn nằm ở một chỗ trên màn hình */
+  position: fixed;
+  right: 20px;
+  bottom: 40px;
+  /* Thiết lập kích thước và màu sắc để icon có thể nhìn thấy */
+  width: 45px;
+  height: 45px;
+  background-color: #14592a; 
+  color: #fff; /* Màu icon */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px; /* Kích thước icon */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  z-index: 999;
+
+  /* Thuộc tính mới cho việc ẩn/hiện bằng JS */
+  opacity: 0; /* Mặc định ẩn */
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+}
+
+/* Class được thêm bằng JavaScript để hiển thị nút */
+.btn-scroll-top.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Điều chỉnh responsive cho di động */
+@media (max-width: 767px) {
+  .footer-col {
+    margin-bottom: 30px;
+  }
+
+  .text-md-end {
+    text-align: center !important;
+  }
+
+  .copyright-links {
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 10px;
+  }
+
+  .copyright-links li {
+    margin-left: 0;
+  }
+}

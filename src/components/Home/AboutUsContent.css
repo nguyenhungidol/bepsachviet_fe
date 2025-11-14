@@ -1,0 +1,42 @@
+.about-us-content-section {
+  /* Đảm bảo nền trắng và có đệm nếu bạn muốn tách biệt khỏi nền trang */
+  /* background-color: #fff; */
+  /* padding: 20px; */
+}
+
+.content-heading {
+  font-size: 24px;
+  font-weight: bold;
+  color: #1d7a3d; /* Màu xanh của thương hiệu */
+  margin-bottom: 15px;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 5px;
+}
+
+.mission-section ul,
+.core-values-section ol {
+  padding-left: 20px;
+  margin-top: 15px;
+}
+
+.mission-section li {
+  margin-bottom: 15px;
+  line-height: 1.6;
+}
+
+.core-values-section ol {
+  font-size: 16px;
+}
+
+.core-values-section li {
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.slogan-text {
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  color: #1d7a3d;
+  margin-top: 15px;
+}

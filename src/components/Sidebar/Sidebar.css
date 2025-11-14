@@ -2,7 +2,7 @@
   background: white;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .sidebar-header {
@@ -27,7 +27,7 @@
   color: #333;
   text-decoration: none;
   font-size: 14px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #333;
   transition: all 0.3s ease;
   position: relative;
   background: white;
@@ -38,7 +38,7 @@
 }
 
 .sidebar-item::before {
-  content: '';
+  content: "";
   position: absolute;
   left: 0;
   top: 0;
