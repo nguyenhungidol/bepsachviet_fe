@@ -1,0 +1,102 @@
+/* RecruitAgents.css */
+
+/* --- GENERAL & HEADER STYLES (Tái sử dụng từ trang Giới Thiệu) --- */
+.recruit-agents-page {
+  font-family: Arial, sans-serif;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* --- POLICY CONTENT STYLES --- */
+.policy-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.main-heading {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 30px;
+  padding-bottom: 10px;
+  padding-left: 560px;
+  border-bottom: 1px solid #eee;
+}
+
+/* Wrapper cho khối ảnh và nội dung chính sách (để tạo layout 2 cột trên) */
+.policy-intro-wrapper {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 40px;
+}
+
+.policy-image-block {
+  flex: 0 0 45%; /* Chiếm khoảng 45% chiều rộng */
+  height: 400px; /* Chiều cao cố định */
+  /* Đây là nơi bạn đặt ảnh bắt tay. Dùng background-image hoặc thẻ <img> bên trong */
+  background-image: url("path/to/handshake_image.png"); /* Thay thế bằng đường dẫn ảnh thực tế */
+  background-size: cover;
+  background-position: center;
+  border-radius: 5px;
+}
+
+.policy-intro-content {
+  flex: 1; /* Chiếm phần còn lại */
+}
+
+/* Danh sách sản phẩm và Lợi ích */
+.product-list,
+.benefit-list {
+  list-style-type: none; /* Loại bỏ dấu chấm mặc định */
+  padding-left: 0;
+  margin-top: 15px;
+}
+
+.product-list li {
+  font-size: 15px;
+  padding-left: 20px;
+  position: relative;
+  margin-bottom: 8px;
+}
+
+.product-list li::before {
+  content: "•"; /* Dùng dấu chấm tròn tùy chỉnh */
+  /* color: #4caf50; */
+  font-weight: bold;
+  display: inline-block;
+  width: 1em;
+  margin-left: -1em;
+}
+
+.benefit-list li {
+  margin-bottom: 10px;
+  list-style-type: disc; /* Dùng dấu chấm mặc định cho danh sách lợi ích */
+  margin-left: 20px;
+}
+
+.commitment-text {
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+/* Các phần chính sách phụ (Chiết khấu, Bảo vệ giá) */
+.sub-policy-section {
+  padding: 20px 0;
+  border-top: 1px solid #eee;
+}
+
+.sub-heading {
+  font-size: 22px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.policy-detail-list {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.policy-detail-list li {
+  margin-bottom: 10px;
+}

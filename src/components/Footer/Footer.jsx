@@ -1,6 +1,7 @@
 import { Container, Row, Col } from "react-bootstrap";
 import "./Footer.css"; // Đảm bảo tạo file CSS này
 import { useState, useEffect } from "react";
+import FanpageBox from "./FanpageBox";
 
 function Footer() {
   const [isVisible, setIsVisible] = useState(false);
@@ -45,7 +46,7 @@ function Footer() {
               <ul className="footer-contact-list list-unstyled">
                 <li>
                   {/* Sử dụng một biểu tượng Home/Map đơn giản, hoặc Font Awesome nếu có */}
-                  <i className="bi bi-house-door-fill"></i> #91 Tam Khương, nhà
+                  <i className="bi bi-house-door-fill"></i> 91 Tam Khương, nhà
                   số 2, P. Khương thượng, Q. Đống Đa, HN.
                 </li>
                 <li>
@@ -124,23 +125,7 @@ function Footer() {
             <Col md={3} sm={6} xs={12} className="footer-col">
               <h5 className="footer-heading">KẾT NỐI VỚI BẾP SẠCH VIỆT</h5>
               <div className="footer-fanpage-box">
-                {/* Đây là phần giả lập cho iframe Fanpage Facebook */}
-                <div className="fanpage-placeholder">
-                  <img
-                    src="path/to/bep-sach-viet-logo.png"
-                    alt="Bếp Sạch Việt"
-                    className="fanpage-logo"
-                  />
-                  <p className="fanpage-name">Bếp Sạch Việt</p>
-                  <p className="fanpage-likes">436 người theo dõi</p>
-                  <button className="fanpage-follow-btn">
-                    <i className="bi bi-facebook"></i> Theo dõi Trang
-                  </button>
-                  <div className="fanpage-posts-preview">
-                    {/* Phần hiển thị ảnh nhỏ bên cạnh, bạn có thể thay bằng ảnh thật */}
-                    <img src="path/to/food-image.jpg" alt="Thức ăn" />
-                  </div>
-                </div>
+                <FanpageBox />
               </div>
             </Col>
           </Row>

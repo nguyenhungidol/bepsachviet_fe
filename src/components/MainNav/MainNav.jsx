@@ -1,95 +1,121 @@
-import React, { useState } from "react";
-import {
-  Container,
-  Form,
-  InputGroup,
-  FormControl,
-  Dropdown,
-} from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { useState, useRef } from "react";
+import { Container, Dropdown } from "react-bootstrap";
+import { NavLink } from "react-router-dom";
 import "./MainNav.css";
+import SearchBar from "./SearchBar/SearchBar";
 
 function MainNav() {
   const [showDropdown, setShowDropdown] = useState(false);
+  const timeoutRef = useRef(null);
+
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    setShowDropdown(true);
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setShowDropdown(false);
+    }, 300); // 300ms delay trước khi ẩn
+  };
+
+  const isProductPage = window.location.pathname.startsWith("/san-pham");
 
   return (
     <div className="main-nav">
       <Container fluid>
         <div className="nav-content d-flex align-items-center justify-content-between">
           <div className="nav-left d-flex align-items-center">
-            <Link to="/" className="nav-item nav-item-home">
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                `nav-item  ${isActive ? "active" : ""}`
+              }
+            >
               TRANG CHỦ
-            </Link>
+            </NavLink>
 
             <Dropdown
               show={showDropdown}
-              onMouseEnter={() => setShowDropdown(true)}
-              onMouseLeave={() => setShowDropdown(false)}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
               className="nav-dropdown"
             >
-              <Link to="/san-pham" className="nav-item">
-                <Dropdown.Toggle className="nav-item nav-item-dropdown">
+              <Dropdown.Toggle
+                className={`nav-item nav-item-dropdown ${
+                  isProductPage ? "active" : ""
+                }`}
+              >
+                <NavLink
+                  to="/san-pham"
+                  className={({ isActive }) =>
+                    `nav-item  ${isActive ? "active" : ""}`
+                  }
+                >
                   SẢN PHẨM
-                </Dropdown.Toggle>
-              </Link>
+                </NavLink>
+              </Dropdown.Toggle>
 
               <Dropdown.Menu>
-                <Dropdown.Item as={Link} to="/san-pham/tu-vit">
+                <Dropdown.Item as={NavLink} to="/san-pham/tu-vit">
                   Sản phẩm tủ vịt
                 </Dropdown.Item>
-                <Dropdown.Item as={Link} to="/san-pham/tu-ga">
+                <Dropdown.Item as={NavLink} to="/san-pham/tu-ga">
                   Sản phẩm tủ gà
                 </Dropdown.Item>
-                <Dropdown.Item as={Link} to="/san-pham/tu-heo">
+                <Dropdown.Item as={NavLink} to="/san-pham/tu-heo">
                   Sản phẩm tủ heo
                 </Dropdown.Item>
-                <Dropdown.Item as={Link} to="/san-pham/tu-ngan">
+                <Dropdown.Item as={NavLink} to="/san-pham/tu-ngan">
                   Sản phẩm tủ ngán
                 </Dropdown.Item>
-                <Dropdown.Item as={Link} to="/san-pham/tu-ca">
+                <Dropdown.Item as={NavLink} to="/san-pham/tu-ca">
                   Sản phẩm tủ cá
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
 
-            <Link to="/tin-tuc" className="nav-item">
+            <NavLink
+              to="/tin-tuc"
+              className={({ isActive }) =>
+                `nav-item ${isActive ? "active" : ""}`
+              }
+            >
               TIN TỨC
-            </Link>
+            </NavLink>
 
-            <Link to="/gioi-thieu" className="nav-item">
+            <NavLink
+              to="/gioi-thieu"
+              className={({ isActive }) =>
+                `nav-item ${isActive ? "active" : ""}`
+              }
+            >
               GIỚI THIỆU
-            </Link>
+            </NavLink>
 
-            <Link to="/tuyen-dai-ly" className="nav-item">
+            <NavLink
+              to="/tuyen-dai-ly"
+              className={({ isActive }) =>
+                `nav-item ${isActive ? "active" : ""}`
+              }
+            >
               TUYỂN ĐẠI LÝ
-            </Link>
+            </NavLink>
 
-            <Link to="/lien-he" className="nav-item">
+            <NavLink
+              to="/lien-he"
+              className={({ isActive }) =>
+                `nav-item ${isActive ? "active" : ""}`
+              }
+            >
               LIÊN HỆ
-            </Link>
+            </NavLink>
           </div>
 
           <div className="nav-right">
-            <Form className="search-form">
-              <InputGroup>
-                <FormControl
-                  placeholder="Tìm kiếm..."
-                  className="search-input"
-                />
-                <button className="search-btn" type="submit">
-                  <svg
-                    width="18"
-                    height="18"
-                    fill="none"
-                    stroke="white"
-                    strokeWidth="2"
-                  >
-                    <circle cx="11" cy="11" r="8" />
-                    <path d="m21 21-4.35-4.35" />
-                  </svg>
-                </button>
-              </InputGroup>
-            </Form>
+            <SearchBar />
           </div>
         </div>
       </Container>

@@ -59,63 +59,14 @@
 
 /* Phần Fanpage Placeholder */
 .footer-fanpage-box {
-  background-color: #fff; /* Nền trắng như trong ảnh */
-  padding: 10px;
+  background-color: #fff; /* Nền trắng cho box chứa fanpage */
   border-radius: 4px;
   color: #333; /* Màu chữ tối */
-}
-
-.fanpage-placeholder {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 10px;
-}
-
-.fanpage-logo {
-  width: 50px;
-  height: 50px;
-  border-radius: 4px;
-}
-
-.fanpage-name {
-  font-weight: bold;
-  font-size: 15px;
-  margin-bottom: 0;
-  line-height: 1.2;
-}
-
-.fanpage-likes {
-  font-size: 12px;
-  color: #606770;
-  margin-top: -5px;
-}
-
-.fanpage-follow-btn {
-  background-color: #4267b2; /* Màu xanh Facebook */
-  color: #fff;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 4px;
-  font-size: 12px;
-  cursor: pointer;
-  margin-top: 10px;
-}
-
-.fanpage-follow-btn i {
-  margin-right: 5px;
-}
-
-.fanpage-posts-preview {
-  /* Điều chỉnh vị trí của phần ảnh nhỏ bên phải */
-  margin-left: auto; /* Đẩy sang phải */
-}
-
-.fanpage-posts-preview img {
-  width: 80px;
-  height: 80px;
-  object-fit: cover;
-  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Thêm đổ bóng nhẹ */
+  /* width: 500px; Điều chỉnh chiều rộng tổng thể của box */
+  max-width: 100%; /* Đảm bảo responsive */
+  overflow: hidden; /* Quan trọng để cắt nội dung bị tràn */
+  position: relative; /* Dùng để định vị nếu cần thêm overlay/mask */
 }
 
 /* Phần Copyright */
@@ -173,12 +124,12 @@
 .btn-scroll-top {
   /* Đảm bảo định vị cố định để nó luôn nằm ở một chỗ trên màn hình */
   position: fixed;
-  right: 20px;
-  bottom: 40px;
+  right: 70px;
+  bottom: 25px;
   /* Thiết lập kích thước và màu sắc để icon có thể nhìn thấy */
   width: 45px;
   height: 45px;
-  background-color: #14592a; 
+  background-color: #14592a;
   color: #fff; /* Màu icon */
   border-radius: 50%;
   display: flex;

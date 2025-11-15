@@ -30,8 +30,8 @@ function App() {
           <Route path="/san-pham" element={<Product />} />
         </Routes>
 
-        <Footer />
         <FloatingButtons />
+        <Footer />
       </div>
     </Router>
   );

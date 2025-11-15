@@ -1,6 +1,6 @@
 .main-nav {
   background: linear-gradient(135deg, #28a745, #20c997);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   position: relative;
   z-index: 100;
 }
@@ -33,15 +33,14 @@
   border-bottom-color: white;
 }
 
-.nav-item.active,
-.nav-item-home {
-  background-color: #FF9800;
-  border-bottom-color: #F57C00;
+.nav-item.active {
+  background-color: #ff9800;
+  border-bottom-color: #f57c00;
 }
 
 .nav-item.active:hover,
 .nav-item-home:hover {
-  background-color: #FB8C00;
+  background-color: #fb8c00;
 }
 
 .nav-dropdown .dropdown-toggle {
@@ -71,7 +70,7 @@
   margin-top: 0;
   border-radius: 0 0 8px 8px;
   border: none;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   min-width: 220px;
 }
 
@@ -97,32 +96,45 @@
 .search-form .input-group {
   border-radius: 25px;
   overflow: hidden;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
+/* Input */
 .search-input {
   border: none;
-  padding: 8px 16px;
+  padding: 10px 16px;
   font-size: 14px;
   min-width: 200px;
 }
 
 .search-input:focus {
-  box-shadow: none;
   outline: none;
+  box-shadow: none;
 }
 
+/* Button */
 .search-btn {
   background-color: #28a745;
   border: none;
-  padding: 8px 16px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+  padding: 0 18px;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
 }
 
+/* Icon Fix 100% */
+.search-btn svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+  stroke: white;
+  font-family: initial !important;
+  font-size: 0 !important; /* Chặn SVG bị render thành text */
+}
+
+/* Hover */
 .search-btn:hover {
   background-color: #218838;
 }
