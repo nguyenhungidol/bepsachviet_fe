@@ -1,0 +1,19 @@
+.section-title {
+  font-size: 22px;
+  font-weight: 600;
+  padding-bottom: 6px;
+  border-bottom: 4px solid #ff9800;
+  display: inline-block;
+  color: white;
+}
+
+.contact-btn {
+  background-color: #1d7a3d !important;
+  border: none;
+  font-weight: bold;
+  padding: 10px 24px;
+}
+
+.contact-btn:hover {
+  background-color: #186733 !important;
+}

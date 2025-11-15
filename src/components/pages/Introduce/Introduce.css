@@ -1,0 +1,66 @@
+/* --- CONTENT STYLES --- */
+.content-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  display: flex; /* Bật layout 2 cột */
+  gap: 40px; /* Khoảng cách giữa 2 cột */
+}
+
+.left-column {
+  flex: 0 0 300px; /* Cột trái: Chiều rộng cố định */
+}
+
+.right-column {
+  flex: 1; /* Cột phải: Chiếm phần còn lại */
+  font-size: 16px;
+}
+
+/* Block "About us" màu đỏ */
+.about-us-block {
+  width: 100%;
+  height: 300px;
+  /* Tùy chọn: Dùng background-image hoặc chỉ màu nền */
+  background-color: #993333;
+  /* Thay thế URL bằng đường dẫn ảnh texture nếu có: */
+  /* background-image: url('path/to/red-texture.png'); 
+    background-size: cover; */
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden; /* Quan trọng để cắt bớt ảnh */
+}
+
+.about-us-title {
+  color: white;
+  font-size: 32px;
+  font-weight: 800;
+  padding: 10px 20px;
+  background-color: rgba(0, 0, 0, 0.2); /* Tạo lớp phủ tối để chữ nổi bật */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  transform: rotate(-5deg); /* Thử xoay nhẹ như trong hình */
+  border: 2px solid white;
+}
+
+/* Các tiêu đề nội dung VỀ CHÚNG TÔI, GIÁ TRỊ CỐT LÕI */
+.content-heading {
+  font-size: 20px;
+  font-weight: bold;
+  /* color: #4caf50; */
+  border-bottom: 2px solid #eee;
+  padding-bottom: 5px;
+  margin-bottom: 15px;
+  margin-top: 30px;
+}
+
+.top-heading {
+  margin-top: 0; /* Tiêu đề đầu tiên không cần margin-top */
+}
+
+.core-value-item {
+  font-weight: bold;
+  margin-top: 15px;
+  margin-bottom: 5px;
+}
