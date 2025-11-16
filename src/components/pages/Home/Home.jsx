@@ -10,7 +10,7 @@ function Home() {
   return (
     <div className="home-page">
       <Container fluid className="home-container">
-        <Row className="g-3">
+        <Row className="g-3 align-items-start">
           <Col xs={12} lg={3} className="sidebar-col">
             <Sidebar />
           </Col>
@@ -18,9 +18,15 @@ function Home() {
           <Col xs={12} lg={9} className="banner-col">
             <Banner />
           </Col>
-          <AboutUsContent />
-          <ProductSection />
-          <NewsAndCertificatesSection />
+          <Col xs={12}>
+            <AboutUsContent />
+          </Col>
+          <Col xs={12}>
+            <ProductSection />
+          </Col>
+          <Col xs={12}>
+            <NewsAndCertificatesSection />
+          </Col>
         </Row>
       </Container>
     </div>

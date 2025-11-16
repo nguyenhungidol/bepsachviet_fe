@@ -1,135 +1,16 @@
 .banner-wrapper {
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
 }
 
 .banner-slide {
-  height: 450px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #FFC107, #FFD54F);
-  position: relative;
-}
-
-.banner-slide-1 {
-  background: linear-gradient(135deg, #FFD54F 0%, #FFF9C4 100%);
-}
-
-.banner-slide-2 {
-  background: linear-gradient(135deg, #81C784 0%, #A5D6A7 100%);
-}
-
-.banner-slide-3 {
-  background: linear-gradient(135deg, #64B5F6 0%, #90CAF9 100%);
-}
-
-.banner-content {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 40px 60px;
-  position: relative;
-}
-
-.qr-section {
-  flex: 0 0 45%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-}
-
-.qr-text h3 {
-  font-size: 22px;
-  font-weight: 700;
-  color: #333;
-  margin: 0;
-  line-height: 1.4;
-  text-align: center;
-}
-
-.qr-text h3.text-success {
-  color: #28a745;
-}
-
-.qr-code {
-  background: white;
-  padding: 15px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.qr-placeholder {
-  width: 150px;
-  height: 150px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.contact-info {
-  display: flex;
-  align-items: center;
-  background: white;
-  padding: 12px 24px;
-  border-radius: 30px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-}
-
-.contact-numbers {
-  font-size: 20px;
-  font-weight: 700;
-  color: #333;
-}
-
-.product-showcase {
-  flex: 0 0 50%;
+  min-height: 450px;
+  height: auto !important;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-}
-
-.showcase-text {
-  font-size: 120px;
-  font-weight: 900;
-  color: rgba(255, 255, 255, 0.3);
-  letter-spacing: 20px;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-  font-family: 'Arial Black', sans-serif;
-  background: linear-gradient(135deg,
-    rgba(255, 152, 0, 0.3) 0%,
-    rgba(255, 87, 34, 0.3) 25%,
-    rgba(76, 175, 80, 0.3) 50%,
-    rgba(255, 152, 0, 0.3) 75%,
-    rgba(255, 87, 34, 0.3) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: shimmer 3s infinite;
-}
-
-@keyframes shimmer {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
-}
-
-.banner-title {
-  font-size: 48px;
-  font-weight: 700;
-  color: white;
-  text-shadow: 2px 2px 8px rgba(0,0,0,0.2);
-  margin-bottom: 20px;
-}
-
-.banner-desc {
-  font-size: 24px;
-  color: white;
-  text-shadow: 1px 1px 4px rgba(0,0,0,0.2);
 }
 
 .carousel-control-prev,
@@ -162,72 +43,10 @@
   .banner-slide {
     height: 350px;
   }
-
-  .banner-content {
-    padding: 30px 40px;
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .qr-section,
-  .product-showcase {
-    flex: 1;
-  }
-
-  .qr-text h3 {
-    font-size: 18px;
-  }
-
-  .contact-numbers {
-    font-size: 16px;
-  }
-
-  .showcase-text {
-    font-size: 80px;
-    letter-spacing: 10px;
-  }
-
-  .banner-title {
-    font-size: 36px;
-  }
-
-  .banner-desc {
-    font-size: 18px;
-  }
 }
 
 @media (max-width: 576px) {
   .banner-slide {
     height: 300px;
-  }
-
-  .banner-content {
-    padding: 20px;
-  }
-
-  .qr-text h3 {
-    font-size: 14px;
-  }
-
-  .qr-placeholder {
-    width: 100px;
-    height: 100px;
-  }
-
-  .contact-numbers {
-    font-size: 14px;
-  }
-
-  .showcase-text {
-    font-size: 50px;
-    letter-spacing: 5px;
-  }
-
-  .banner-title {
-    font-size: 28px;
-  }
-
-  .banner-desc {
-    font-size: 16px;
   }
 }

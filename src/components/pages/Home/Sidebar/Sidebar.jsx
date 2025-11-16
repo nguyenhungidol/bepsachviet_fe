@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import './Sidebar.css';
+import { useState } from "react";
+import "./Sidebar.css";
 
 const categories = [
-  "Sản phẩm tủ vịt",
-  "Sản phẩm tủ gà",
-  "Sản phẩm tủ heo",
-  "Sản phẩm tủ ngán",
-  "Sản phẩm tủ cá",
+  "Sản phẩm từ vịt",
+  "Sản phẩm từ gà",
+  "Sản phẩm từ heo",
+  "Sản phẩm từ ngan",
+  "Sản phẩm từ cá",
   "Hải sản",
   "Các loại hạt",
   "Các loại rượu",
@@ -19,8 +19,14 @@ function Sidebar() {
   return (
     <div className="sidebar">
       <div className="sidebar-header">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="white" className="me-2">
-          <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="white"
+          className="me-2"
+        >
+          <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" />
         </svg>
         DANH MỤC SẢN PHẨM
       </div>

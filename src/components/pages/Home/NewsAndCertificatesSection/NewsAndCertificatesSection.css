@@ -34,7 +34,7 @@
 }
 
 .news-image-container {
-  height: 180px; /* Chiều cao cố định cho ảnh */
+  height: 240px; /* Chiều cao cố định cho ảnh */
   overflow: hidden;
 }
 

@@ -18,10 +18,8 @@ function MainNav() {
   const handleMouseLeave = () => {
     timeoutRef.current = setTimeout(() => {
       setShowDropdown(false);
-    }, 300); // 300ms delay trước khi ẩn
+    }, 200); // 300ms delay trước khi ẩn
   };
-
-  const isProductPage = window.location.pathname.startsWith("/san-pham");
 
   return (
     <div className="main-nav">
@@ -43,11 +41,7 @@ function MainNav() {
               onMouseLeave={handleMouseLeave}
               className="nav-dropdown"
             >
-              <Dropdown.Toggle
-                className={`nav-item nav-item-dropdown ${
-                  isProductPage ? "active" : ""
-                }`}
-              >
+              <Dropdown.Toggle>
                 <NavLink
                   to="/san-pham"
                   className={({ isActive }) =>

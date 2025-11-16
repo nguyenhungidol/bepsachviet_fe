@@ -1,17 +1,5 @@
+import Sidebar from "../Home/Sidebar/Sidebar";
 import "./Product.css";
-
-// Dữ liệu giả lập
-const categories = [
-  "Sản phẩm từ vịt",
-  "Sản phẩm từ gà",
-  "Sản phẩm từ heo",
-  "Sản phẩm từ ngan",
-  "Sản phẩm từ cá",
-  "Hải sản",
-  "Các loại hạt",
-  "Các loại nước",
-  "Thực phẩm khác",
-];
 
 const featuredProducts = [
   { name: "Chả ốc ống nứa", price: "0 ₫", img: "placeholder_img_1" },
@@ -117,19 +105,10 @@ const Product = () => {
         {/* Sidebar */}
         <div className="sidebar">
           {/* Danh mục sản phẩm */}
-          <div className="sidebar-section">
-            <h2 className="sidebar-heading green-bg">DANH MỤC SẢN PHẨM</h2>
-            <ul className="category-list">
-              {categories.map((cat, index) => (
-                <li key={index} className="category-item">
-                  <a href="#">{cat}</a>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <Sidebar />
 
           {/* Lọc sản phẩm */}
-          <div className="sidebar-section">
+          <div className="sidebar-section mt-4">
             <h2 className="sidebar-heading dark-green-bg">LỌC SẢN PHẨM</h2>
             <div className="price-filter-content">
               {/* Giả lập thanh trượt giá */}

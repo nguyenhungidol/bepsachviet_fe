@@ -80,7 +80,7 @@
   border-color: #e0e0e0 !important;
 }
 .article-img {
-  width: 250px; /* Chiều rộng cố định cho ảnh */
+  width: 310px; /* Chiều rộng cố định cho ảnh */
   height: 180px;
   object-fit: cover;
   border-radius: 6px;
