@@ -1,8 +1,16 @@
 import "./Introduce.css"; // Quan trọng: Import file CSS vào đây
+import { Container } from "react-bootstrap";
 
 const Introduce = () => {
   return (
     <div className="introduce-page">
+      <div className="page-header-top bg-gray-100 py-3">
+        <Container>
+          <div className="breadcrumb text-sm text-muted">
+            Trang chủ » <span className="text-primary"> Giới thiệu</span>
+          </div>
+        </Container>
+      </div>
       <div className="content-container">
         {/* Cột Trái: Ảnh "About us" */}
         <div className="left-column">

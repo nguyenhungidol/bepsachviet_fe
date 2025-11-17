@@ -1,0 +1,83 @@
+:root {
+  --main-green-dark: #1d7a3d;
+  --main-orange: #ff9900;
+  --text-gray: #666;
+}
+
+/* --- 1. Banners/Chứng nhận --- */
+.banner-row {
+  margin-top: 20px;
+}
+
+.top-banner {
+  height: 120px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* --- 2. Sidebar Sản phẩm & Tabs --- */
+.sidebar-product-heading {
+  background-color: var(--main-green-dark);
+  color: white;
+  padding: 10px 15px;
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  border-radius: 4px;
+}
+
+/* Điều chỉnh khoảng cách và căn chỉnh cho cột sản phẩm chính */
+.main-product-list-col {
+  padding-left: 15px;
+}
+
+/* --- Tiêu đề (Đặc sản mới ngày) --- */
+.product-section-title {
+  background-color: #28a745; /* Màu xanh lá cây */
+  color: white;
+  font-size: 18px;
+  font-weight: 700;
+  padding: 10px 20px;
+  border-radius: 50px; /* Bo tròn để tạo hình nút */
+  display: inline-block;
+  margin: 0;
+}
+
+/* --- Tùy chỉnh Tabs --- */
+.product-tabs-nav {
+  border-bottom: none; /* Xóa đường viền dưới của Tabs */
+}
+
+/* Kiểu của Tab (chữ "Sản phẩm bán chạy") */
+.product-tabs-nav .nav-link {
+  border: none;
+  color: #333;
+  font-weight: 600;
+  font-size: 16px;
+  padding-left: 0;
+  padding-right: 20px;
+}
+
+/* Kiểu của Tab khi được CHỌN (active) */
+.product-tabs-nav .nav-link.active {
+  color: #333;
+  background-color: transparent; /* Xóa nền khi active */
+  border-bottom: 3px solid #28a745; /* Thêm gạch chân xanh */
+}
+
+/* Kiểu của Tab khi HOVER */
+.product-tabs-nav .nav-link:hover {
+  color: #28a745;
+  border-color: transparent; /* Xóa border khi hover */
+}
+
+/* Điều chỉnh cho màn hình nhỏ */
+@media (max-width: 991px) {
+  .sidebar-product-col {
+    margin-bottom: 20px;
+  }
+}

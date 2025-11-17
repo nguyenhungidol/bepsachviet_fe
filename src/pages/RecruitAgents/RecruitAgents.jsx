@@ -1,9 +1,17 @@
 import "./RecruitAgents.css"; // Import file CSS
 import { NavLink } from "react-router-dom";
+import { Container } from "react-bootstrap";
 
 const RecruitAgents = () => {
   return (
     <div className="recruit-agents-page">
+      <div className="page-header-top bg-gray-100 py-3">
+        <Container>
+          <div className="breadcrumb text-sm text-muted">
+            Trang chủ » <span className="text-primary">Tuyển đại lý</span>
+          </div>
+        </Container>
+      </div>
       <div className="policy-container">
         {/* Khối chính sách đại lý */}
         <section className="main-policy-section">

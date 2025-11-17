@@ -59,14 +59,13 @@
 
 /* Phần Fanpage Placeholder */
 .footer-fanpage-box {
-  background-color: #fff; /* Nền trắng cho box chứa fanpage */
+  background-color: #fff;
   border-radius: 4px;
-  color: #333; /* Màu chữ tối */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Thêm đổ bóng nhẹ */
-  /* width: 500px; Điều chỉnh chiều rộng tổng thể của box */
-  max-width: 100%; /* Đảm bảo responsive */
-  overflow: hidden; /* Quan trọng để cắt nội dung bị tràn */
-  position: relative; /* Dùng để định vị nếu cần thêm overlay/mask */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  max-width: 100%;
+  overflow: visible !important;
+  min-height: 100px;
+  justify-content: center;
 }
 
 /* Phần Copyright */

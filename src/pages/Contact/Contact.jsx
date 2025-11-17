@@ -1,6 +1,6 @@
-import React from "react";
 import { Form, Button } from "react-bootstrap";
 import "./Contact.css";
+import { Container } from "react-bootstrap";
 
 const ContactForm = () => (
   <div className="bg-white p-4 shadow rounded h-100">
@@ -87,10 +87,12 @@ const ContactInfoAndMap = () => {
 
 const ContactPage = () => (
   <div className="contact-page py-4 bg-light">
-    <div className="container mb-3">
-      <small className="text-muted">
-        Trang chủ » <span className="fw-semibold">Liên hệ</span>
-      </small>
+    <div className="page-header-top bg-gray-100 py-3">
+      <Container>
+        <div className="breadcrumb text-sm text-muted">
+          Trang chủ » <span className="text-primary">Liên hệ</span>
+        </div>
+      </Container>
     </div>
 
     <div className="container">

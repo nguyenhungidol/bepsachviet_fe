@@ -1,0 +1,94 @@
+.store-page {
+  background: #f8f9fa;
+  font-family: Arial, sans-serif;
+}
+
+.main-store-content {
+  max-width: 1320px;
+}
+
+.page-header-top {
+  background-color: #f1f3f5;
+}
+
+.sidebar-section {
+  border: 1px solid #eee;
+}
+
+.sidebar-heading {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.green-bg {
+  background-color: #4caf50;
+}
+
+.dark-green-bg {
+  background-color: #388e3c;
+}
+
+.sort-filter-area {
+  display: flex;
+  justify-content: flex-end; /* Căn phải */
+  align-items: center;
+  gap: 10px; /* Khoảng cách giữa span và dropdown */
+  flex-wrap: wrap; /* Responsive */
+}
+
+.display-info {
+  font-size: 14px;
+  color: #555;
+}
+
+.sort-dropdown {
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+.price-filter-content {
+  font-size: 14px;
+}
+
+.price-slider {
+  height: 5px;
+  background-color: #ddd;
+  margin: 15px 0;
+}
+
+.filter-button {
+  background-color: #666;
+  color: white;
+  padding: 5px 15px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.featured-item {
+  display: flex;
+  align-items: center;
+}
+
+.featured-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  margin-right: 10px;
+}
+
+.featured-details {
+  font-size: 14px;
+}
+
+.featured-price {
+  color: #e65100;
+  font-weight: bold;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+}

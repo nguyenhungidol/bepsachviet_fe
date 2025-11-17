@@ -3,10 +3,12 @@ import { useEffect } from "react";
 
 function FanpageBox() {
   useEffect(() => {
-    // Khi component mount, gọi parse để Facebook render plugin
-    if (window.FB) {
-      window.FB.XFBML.parse();
-    }
+    // Thêm setTimeout để đảm bảo DOM đã sẵn sàng trước khi parse
+    setTimeout(() => {
+      if (window.FB) {
+        window.FB.XFBML.parse();
+      }
+    }, 100); // Đợi 0.1 giây
   }, []);
 
   return (
@@ -16,10 +18,9 @@ function FanpageBox() {
       <div
         className="fb-page"
         data-href="https://www.facebook.com/BepsachvietOfficial/"
-        // data-tabs="timeline" // Bỏ thuộc tính này đi
         data-width="350"
-        data-height="150" // Giảm chiều cao để chỉ hiển thị phần đầu
-        data-small-header="true" // Dùng header nhỏ gọn hơn nếu muốn
+        data-height="300" // Giảm chiều cao để chỉ hiển thị phần đầu
+        data-small-header="false" // Dùng header nhỏ gọn hơn nếu muốn
         data-adapt-container-width="true"
         data-hide-cover="false"
         data-show-facepile="false" // Ẩn ảnh bạn bè đã like nếu không cần
