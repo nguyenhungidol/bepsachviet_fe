@@ -1,11 +1,15 @@
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Container, Dropdown } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 import "./MainNav.css";
 import SearchBar from "./SearchBar/SearchBar";
+import { fetchActiveCategories } from "../../services/categoryService";
 
 function MainNav() {
   const [showDropdown, setShowDropdown] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+  const [categoryError, setCategoryError] = useState("");
   const timeoutRef = useRef(null);
 
   const handleMouseEnter = () => {
@@ -19,6 +23,74 @@ function MainNav() {
     timeoutRef.current = setTimeout(() => {
       setShowDropdown(false);
     }, 200); // 300ms delay trước khi ẩn
+  };
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const loadCategories = async () => {
+      try {
+        setLoadingCategories(true);
+        const activeCategories = await fetchActiveCategories({
+          signal: controller.signal,
+        });
+        setCategories(activeCategories);
+        setCategoryError("");
+      } catch (error) {
+        if (error.name !== "AbortError") {
+          console.error("Fetch categories failed:", error);
+          setCategoryError("Không tải được danh mục");
+          setCategories([]);
+        }
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+
+    loadCategories();
+    return () => controller.abort();
+  }, []);
+
+  const renderDropdownItems = () => {
+    if (loadingCategories) {
+      return (
+        <Dropdown.Item disabled className="text-muted">
+          Đang tải danh mục...
+        </Dropdown.Item>
+      );
+    }
+
+    if (categoryError) {
+      return (
+        <Dropdown.Item disabled className="text-danger">
+          {categoryError}
+        </Dropdown.Item>
+      );
+    }
+
+    if (!categories.length) {
+      return (
+        <Dropdown.Item disabled className="text-muted">
+          Chưa có danh mục
+        </Dropdown.Item>
+      );
+    }
+
+    return categories.map((cat) => {
+      const name = cat?.name || "Danh mục";
+      const slug = (cat?.name || "san-pham").toLowerCase().replace(/\s+/g, "-");
+      const target = cat?.categoryId ? cat.categoryId : slug;
+
+      return (
+        <Dropdown.Item
+          key={cat?.categoryId || slug}
+          as={NavLink}
+          to={`/san-pham/${target}`}
+        >
+          {name}
+        </Dropdown.Item>
+      );
+    });
   };
 
   return (
@@ -52,23 +124,7 @@ function MainNav() {
                 </NavLink>
               </Dropdown.Toggle>
 
-              <Dropdown.Menu>
-                <Dropdown.Item as={NavLink} to="/san-pham/tu-vit">
-                  Sản phẩm tủ vịt
-                </Dropdown.Item>
-                <Dropdown.Item as={NavLink} to="/san-pham/tu-ga">
-                  Sản phẩm tủ gà
-                </Dropdown.Item>
-                <Dropdown.Item as={NavLink} to="/san-pham/tu-heo">
-                  Sản phẩm tủ heo
-                </Dropdown.Item>
-                <Dropdown.Item as={NavLink} to="/san-pham/tu-ngan">
-                  Sản phẩm tủ ngán
-                </Dropdown.Item>
-                <Dropdown.Item as={NavLink} to="/san-pham/tu-ca">
-                  Sản phẩm tủ cá
-                </Dropdown.Item>
-              </Dropdown.Menu>
+              <Dropdown.Menu>{renderDropdownItems()}</Dropdown.Menu>
             </Dropdown>
 
             <NavLink

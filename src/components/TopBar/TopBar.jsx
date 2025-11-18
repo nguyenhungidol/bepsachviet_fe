@@ -2,6 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { Container } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./TopBar.css";
+import {
+  AUTH_STATE_EVENT,
+  clearAuthData,
+  getStoredUser,
+} from "../../services/userService";
 
 function TopBar() {
   const [userInfo, setUserInfo] = useState(null);
@@ -11,8 +16,7 @@ function TopBar() {
   const location = useLocation();
 
   const syncUserInfo = () => {
-    const storedUser = localStorage.getItem("userInfo");
-    setUserInfo(storedUser ? JSON.parse(storedUser) : null);
+    setUserInfo(getStoredUser());
     setMenuOpen(false);
   };
 
@@ -25,11 +29,11 @@ function TopBar() {
     const handleAuthEvent = () => syncUserInfo();
 
     window.addEventListener("storage", handleStorage);
-    window.addEventListener("auth-state-changed", handleAuthEvent);
+    window.addEventListener(AUTH_STATE_EVENT, handleAuthEvent);
 
     return () => {
       window.removeEventListener("storage", handleStorage);
-      window.removeEventListener("auth-state-changed", handleAuthEvent);
+      window.removeEventListener(AUTH_STATE_EVENT, handleAuthEvent);
     };
   }, []);
 
@@ -48,11 +52,9 @@ function TopBar() {
   }, [menuOpen]);
 
   const handleLogout = () => {
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("userInfo");
+    clearAuthData();
     setUserInfo(null);
     setMenuOpen(false);
-    window.dispatchEvent(new Event("auth-state-changed"));
     navigate("/dang-nhap");
   };
 

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Form, Button, Container, Alert } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
+import { loginUser, saveAuthData } from "../../services/userService";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -45,53 +46,31 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8080/api/v1.0/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: email,
-          password: password,
-          rememberMe: rememberMe,
-        }),
+      const data = await loginUser({
+        email,
+        password,
+        rememberMe,
       });
 
-      const data = await response.json();
-      console.log("Login response data:", data);
+      setApiSuccess("Đăng nhập thành công!");
 
-      if (response.ok) {
-        setApiSuccess("Đăng nhập thành công!");
+      const userPayload = data.user || {
+        email: data.email || email,
+        role: data.role || "ROLE_USER",
+        name: data.name || data.email?.split("@")[0] || email,
+      };
 
-        // Store token if provided
-        if (data.token) {
-          localStorage.setItem("authToken", data.token);
-        }
+      saveAuthData({
+        token: data.token,
+        user: userPayload,
+      });
 
-        // Store user info if provided
-        const userData = {
-          email: data.email,
-          role: data.role,
-          name: data.email.split("@")[0], // Ví dụ: admin@gmail.com -> tên là "admin"
-        };
-
-        // 3. Lưu vào localStorage (BẮT BUỘC PHẢI CÓ DÒNG NÀY)
-        localStorage.setItem("userInfo", JSON.stringify(userData));
-
-        window.dispatchEvent(new Event("auth-state-changed"));
-
-        // Redirect after a short delay
-        setTimeout(() => {
-          navigate("/");
-        }, 1000);
-      } else {
-        setApiError(data.message || "Đăng nhập thất bại. Vui lòng thử lại.");
-      }
+      setTimeout(() => {
+        navigate("/");
+      }, 1000);
     } catch (error) {
       console.error("Login error:", error);
-      setApiError(
-        "Lỗi kết nối. Vui lòng kiểm tra kết nối internet và thử lại."
-      );
+      setApiError(error.message || "Đăng nhập thất bại. Vui lòng thử lại.");
     } finally {
       setLoading(false);
     }

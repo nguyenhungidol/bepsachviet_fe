@@ -1,20 +1,70 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { fetchActiveCategories } from "../../../services/categoryService";
 import "./Sidebar.css";
 
-const categories = [
-  "Sản phẩm từ vịt",
-  "Sản phẩm từ gà",
-  "Sản phẩm từ heo",
-  "Sản phẩm từ ngan",
-  "Sản phẩm từ cá",
-  "Hải sản",
-  "Các loại hạt",
-  "Các loại rượu",
-  "Thực phẩm khác",
-];
-
 function Sidebar() {
+  const [categories, setCategories] = useState([]);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const loadCategories = async () => {
+      try {
+        setLoading(true);
+        const activeCategories = await fetchActiveCategories({
+          signal: controller.signal,
+        });
+        setCategories(activeCategories);
+        setActiveIndex(0);
+        setError("");
+      } catch (err) {
+        if (err.name !== "AbortError") {
+          console.error("Fetch categories failed:", err);
+          setError("Không tải được danh mục. Vui lòng thử lại.");
+          setCategories([]);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadCategories();
+    return () => controller.abort();
+  }, []);
+
+  const renderList = () => {
+    if (loading) {
+      return <div className="sidebar-placeholder">Đang tải danh mục...</div>;
+    }
+
+    if (error) {
+      return <div className="sidebar-error">{error}</div>;
+    }
+
+    if (!categories.length) {
+      return <div className="sidebar-placeholder">Chưa có danh mục</div>;
+    }
+
+    return categories.map((cat, index) => {
+      const slug = (cat?.name || `category-${index}`)
+        .toLowerCase()
+        .replace(/\s+/g, "-");
+
+      return (
+        <a
+          key={cat?.categoryId || index}
+          href={`#${slug}`}
+          className={`sidebar-item ${index === activeIndex ? "active" : ""}`}
+          onClick={() => setActiveIndex(index)}
+        >
+          {cat?.name || "Danh mục chưa đặt tên"}
+        </a>
+      );
+    });
+  };
 
   return (
     <div className="sidebar">
@@ -31,18 +81,7 @@ function Sidebar() {
         DANH MỤC SẢN PHẨM
       </div>
 
-      <div className="sidebar-menu">
-        {categories.map((cat, index) => (
-          <a
-            key={index}
-            href={`#${cat.replace(/\s/g, "-").toLowerCase()}`}
-            className={`sidebar-item ${index === activeIndex ? "active" : ""}`}
-            onClick={() => setActiveIndex(index)}
-          >
-            {cat}
-          </a>
-        ))}
-      </div>
+      <div className="sidebar-menu">{renderList()}</div>
     </div>
   );
 }
