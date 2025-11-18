@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import "./SearchBar.css";
 
+
+// sử dụng productlist api để lấy dữ liệu tìm kiếm
 const mockSuggestions = [
   "Vịt quay Bắc Kinh",
   "Cá hồi Nauy",

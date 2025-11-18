@@ -24,10 +24,6 @@
   background-color: #4caf50;
 }
 
-.dark-green-bg {
-  background-color: #388e3c;
-}
-
 .sort-filter-area {
   display: flex;
   justify-content: flex-end; /* Căn phải */

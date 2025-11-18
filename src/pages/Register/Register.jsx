@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Form, Button, Container, Alert } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import "./Register.css";
+import { registerUser } from "../../services/userService";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -65,34 +66,20 @@ const Register = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8080/api/v1.0/registers", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-          role: "ROLE_USER",
-        }),
+      await registerUser({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        role: "ROLE_USER",
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setApiSuccess(
-          "Đăng ký thành công! Vui lòng kiểm tra email để xác thực."
-        );
-        setTimeout(() => {
-          navigate("/dang-nhap");
-        }, 1200);
-      } else {
-        setApiError(data.message || "Đăng ký thất bại. Vui lòng thử lại.");
-      }
+      setApiSuccess("Đăng ký thành công! Vui lòng kiểm tra email để xác thực.");
+      setTimeout(() => {
+        navigate("/dang-nhap");
+      }, 1200);
     } catch (error) {
       console.error("Register error:", error);
-      setApiError("Không thể kết nối đến máy chủ. Vui lòng thử lại sau.");
+      setApiError(error.message || "Đăng ký thất bại. Vui lòng thử lại.");
     } finally {
       setLoading(false);
     }

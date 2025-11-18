@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Container, Row, Col, Card, Button, Badge } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import "./TaiKhoan.css";
+import { AUTH_STATE_EVENT, getStoredUser } from "../../services/userService";
 
 const TaiKhoan = () => {
   const [userInfo, setUserInfo] = useState(null);
@@ -9,20 +10,15 @@ const TaiKhoan = () => {
   const navigate = useNavigate();
 
   const syncUser = () => {
-    const stored = localStorage.getItem("userInfo");
-    if (stored) {
-      setUserInfo(JSON.parse(stored));
-    } else {
-      setUserInfo(null);
-    }
+    setUserInfo(getStoredUser());
     setLoading(false);
   };
 
   useEffect(() => {
     syncUser();
     const handleAuthChange = () => syncUser();
-    window.addEventListener("auth-state-changed", handleAuthChange);
-    return () => window.removeEventListener("auth-state-changed", handleAuthChange);
+    window.addEventListener(AUTH_STATE_EVENT, handleAuthChange);
+    return () => window.removeEventListener(AUTH_STATE_EVENT, handleAuthChange);
   }, []);
 
   useEffect(() => {
@@ -50,7 +46,9 @@ const TaiKhoan = () => {
       return (
         <div className="account-empty">
           <p>Bạn chưa đăng nhập.</p>
-          <Button variant="success" onClick={() => navigate("/dang-nhap")}>Đăng nhập</Button>
+          <Button variant="success" onClick={() => navigate("/dang-nhap")}>
+            Đăng nhập
+          </Button>
         </div>
       );
     }
@@ -80,7 +78,9 @@ const TaiKhoan = () => {
             <Card.Body>
               <div className="info-row">
                 <span className="info-label">Họ và tên</span>
-                <span className="info-value">{userInfo.name || "Chưa cập nhật"}</span>
+                <span className="info-value">
+                  {userInfo.name || "Chưa cập nhật"}
+                </span>
               </div>
               <div className="info-row">
                 <span className="info-label">Email</span>
@@ -88,14 +88,19 @@ const TaiKhoan = () => {
               </div>
               <div className="info-row">
                 <span className="info-label">Vai trò</span>
-                <span className="info-value role">{userInfo.role || "ROLE_USER"}</span>
+                <span className="info-value role">
+                  {userInfo.role || "ROLE_USER"}
+                </span>
               </div>
 
               <div className="d-flex gap-3 flex-wrap mt-4">
                 <Button variant="success" onClick={handleEditProfile}>
                   Cập nhật hồ sơ
                 </Button>
-                <Button variant="outline-success" onClick={handleChangePassword}>
+                <Button
+                  variant="outline-success"
+                  onClick={handleChangePassword}
+                >
                   Đổi mật khẩu
                 </Button>
               </div>

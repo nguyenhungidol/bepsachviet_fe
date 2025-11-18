@@ -1,6 +1,6 @@
 :root {
-  --primary-green: #1d7a3d;
-  --dark-green: #14592a;
+  --primary-green: #4caf50;
+  --dark-green: #4caf50;
   --link-hover: #ff9900;
 }
 
@@ -98,6 +98,7 @@
   /* Giới hạn text 3 dòng */
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }

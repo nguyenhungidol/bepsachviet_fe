@@ -70,6 +70,17 @@
   transform: scaleY(1);
 }
 
+.sidebar-placeholder,
+.sidebar-error {
+  padding: 12px;
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+.sidebar-error {
+  background: rgba(255, 0, 0, 0.2);
+}
+
 @media (max-width: 768px) {
   .sidebar {
     margin-bottom: 20px;

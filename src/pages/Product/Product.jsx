@@ -92,7 +92,7 @@ function Store() {
 
             {/* Lọc sản phẩm */}
             <div className="sidebar-section mt-4 bg-white shadow-sm rounded">
-              <h4 className="sidebar-heading dark-green-bg text-white p-3 rounded-top">
+              <h4 className="sidebar-heading green-bg text-white p-3 rounded-top">
                 LỌC SẢN PHẨM
               </h4>
               <div className="p-3 price-filter-content">
