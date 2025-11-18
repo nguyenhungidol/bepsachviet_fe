@@ -58,6 +58,7 @@ const Login = () => {
       });
 
       const data = await response.json();
+      console.log("Login response data:", data);
 
       if (response.ok) {
         setApiSuccess("Đăng nhập thành công!");
@@ -68,9 +69,16 @@ const Login = () => {
         }
 
         // Store user info if provided
-        if (data.user) {
-          localStorage.setItem("userInfo", JSON.stringify(data.user));
-        }
+        const userData = {
+          email: data.email,
+          role: data.role,
+          name: data.email.split("@")[0], // Ví dụ: admin@gmail.com -> tên là "admin"
+        };
+
+        // 3. Lưu vào localStorage (BẮT BUỘC PHẢI CÓ DÒNG NÀY)
+        localStorage.setItem("userInfo", JSON.stringify(userData));
+
+        window.dispatchEvent(new Event("auth-state-changed"));
 
         // Redirect after a short delay
         setTimeout(() => {
@@ -128,7 +136,7 @@ const Login = () => {
                 {/* Email Field */}
                 <Form.Group className="mb-4">
                   <Form.Label className="form-label">
-                    <span className="text-danger">Email*</span>
+                    <span>Email*</span>
                   </Form.Label>
                   <Form.Control
                     type="email"
@@ -151,7 +159,7 @@ const Login = () => {
                 {/* Password Field */}
                 <Form.Group className="mb-3">
                   <Form.Label className="form-label">
-                    <span className="text-danger">Mật khẩu *</span>
+                    <span>Mật khẩu *</span>
                   </Form.Label>
                   <Form.Control
                     type="password"

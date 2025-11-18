@@ -1,8 +1,63 @@
-import React from "react";
+import { useEffect, useRef, useState } from "react";
 import { Container } from "react-bootstrap";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./TopBar.css";
 
 function TopBar() {
+  const [userInfo, setUserInfo] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const syncUserInfo = () => {
+    const storedUser = localStorage.getItem("userInfo");
+    setUserInfo(storedUser ? JSON.parse(storedUser) : null);
+    setMenuOpen(false);
+  };
+
+  useEffect(() => {
+    syncUserInfo();
+  }, [location]);
+
+  useEffect(() => {
+    const handleStorage = () => syncUserInfo();
+    const handleAuthEvent = () => syncUserInfo();
+
+    window.addEventListener("storage", handleStorage);
+    window.addEventListener("auth-state-changed", handleAuthEvent);
+
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("auth-state-changed", handleAuthEvent);
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMenuOpen(false);
+      }
+    };
+
+    if (menuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [menuOpen]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("userInfo");
+    setUserInfo(null);
+    setMenuOpen(false);
+    window.dispatchEvent(new Event("auth-state-changed"));
+    navigate("/dang-nhap");
+  };
+
+  const displayName = userInfo?.name || userInfo?.email;
+
   return (
     <div className="top-bar">
       <Container
@@ -22,13 +77,52 @@ function TopBar() {
           </div>
         </div>
         <div className="top-bar-right">
-          <a href="/dang-nhap" className="text-white text-decoration-none">
-            Đăng nhập
-          </a>
-          <span className="mx-2">/</span>
-          <a href="/dang-ky" className="text-white text-decoration-none">
-            Đăng ký
-          </a>
+          {userInfo ? (
+            <div className="top-bar-user" ref={menuRef}>
+              <button
+                type="button"
+                className="user-toggle"
+                onClick={() => setMenuOpen((prev) => !prev)}
+              >
+                <i className="bi bi-person-circle"></i>
+                <span className="user-name">{displayName || "Tài khoản"}</span>
+                <i className="bi bi-chevron-down"></i>
+              </button>
+
+              {menuOpen && (
+                <div className="user-menu">
+                  <div className="user-info">
+                    <div className="user-info-name">{userInfo.name}</div>
+                    <div className="user-info-email">{userInfo.email}</div>
+                  </div>
+                  <button
+                    type="button"
+                    className="user-menu-item"
+                    onClick={() => navigate("/tai-khoan")}
+                  >
+                    Thông tin tài khoản
+                  </button>
+                  <button
+                    type="button"
+                    className="user-menu-item logout"
+                    onClick={handleLogout}
+                  >
+                    Đăng xuất
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <>
+              <a href="/dang-nhap" className="text-white text-decoration-none">
+                Đăng nhập
+              </a>
+              <span className="mx-2">/</span>
+              <a href="/dang-ky" className="text-white text-decoration-none">
+                Đăng ký
+              </a>
+            </>
+          )}
         </div>
       </Container>
     </div>

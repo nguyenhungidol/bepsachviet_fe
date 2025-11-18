@@ -20,6 +20,91 @@
   align-items: center;
 }
 
+.top-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.top-bar-user {
+  position: relative;
+}
+
+.user-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.25rem 0;
+}
+
+.user-toggle:focus {
+  outline: none;
+}
+
+.user-name {
+  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: #ffffff;
+  color: #212529;
+  min-width: 220px;
+  border-radius: 8px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  padding: 12px;
+  z-index: 1100;
+}
+
+.user-info {
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+.user-info-name {
+  font-weight: 600;
+  color: #0f5132;
+}
+
+.user-info-email {
+  font-size: 13px;
+  color: #6c757d;
+}
+
+.user-menu-item {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  padding: 8px 0;
+  font-size: 14px;
+  color: #212529;
+  cursor: pointer;
+}
+
+.user-menu-item:hover {
+  color: #198754;
+}
+
+.user-menu-item.logout {
+  color: #dc3545;
+}
+
+.user-menu-item.logout:hover {
+  color: #bb2d3b;
+}
+
 @media (max-width: 768px) {
   .top-bar-left {
     flex-direction: column;

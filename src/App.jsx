@@ -13,6 +13,8 @@ import Contact from "./pages/Contact/Contact";
 import RecruitAgents from "./pages/RecruitAgents/RecruitAgents";
 import Product from "./pages/Product/Product";
 import Login from "./pages/Login/Login";
+import Register from "./pages/Register/Register";
+import TaiKhoan from "./pages/TaiKhoan/TaiKhoan";
 
 function App() {
   return (
@@ -30,6 +32,8 @@ function App() {
           <Route path="/tuyen-dai-ly" element={<RecruitAgents />} />
           <Route path="/san-pham" element={<Product />} />
           <Route path="/dang-nhap" element={<Login />} />
+          <Route path="/dang-ky" element={<Register />} />
+          <Route path="/tai-khoan" element={<TaiKhoan />} />
         </Routes>
 
         <FloatingButtons />
