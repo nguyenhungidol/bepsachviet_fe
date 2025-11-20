@@ -1,67 +1,54 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Container, Row, Col, Tabs, Tab } from "react-bootstrap";
 import "./ProductSection.css";
 import ProductCard from "../../../components/ProductCard/ProductCard.jsx";
+import { fetchProducts } from "../../../services/productService";
 
 function ProductSection() {
   const [key, setKey] = useState("banchay");
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  // -------------------------
-  // 1️⃣ Danh sách sản phẩm
-  // -------------------------
+  useEffect(() => {
+    const controller = new AbortController();
 
-  const bestSellers = [
-    {
-      imageSrc: "/VIT-U-XI-DAU-1-280x280.png",
-      name: "Đặc sản Vân Đình: Vịt ủ xì dầu",
-      ocUrl: "/ocop3.png",
-      price: "LIÊN HỆ",
-    },
-    {
-      imageSrc: "/chavit_small1-280x280.jpg",
-      name: "Đặc sản Vân Đình: Chả Thúy Mạnh",
-      ocUrl: "/ocop.png",
-      price: "LIÊN HỆ",
-    },
-    {
-      imageSrc: "/409210980_288991037472774_886226677564611827_n-400x400.jpg",
-      name: "Tai heo ủ xì dầu",
-      price: "LIÊN HỆ",
-    },
-    {
-      imageSrc:
-        "/cach-nau-gio-heo-gia-cay-cho-ong-xa-lai-rai-cung-ban-be-202205251515466728-280x280.jpg",
-      name: "Chân giò giả cầy",
-      price: "LIÊN HỆ",
-    },
-  ];
+    const loadProducts = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const data = await fetchProducts({ signal: controller.signal });
+        setProducts(data);
+      } catch (err) {
+        if (err.name !== "AbortError") {
+          setError("Không thể tải danh sách sản phẩm.");
+          console.error("Failed to fetch products", err);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const newProducts = [
-    {
-      imageSrc: "/spmoi1.png",
-      name: "Đặc sản mới 1",
-      ocUrl: "/ocop.png",
-      price: "LIÊN HỆ",
-    },
-    {
-      imageSrc: "/spmoi2.png",
-      name: "Đặc sản mới 2",
-      price: "LIÊN HỆ",
-    },
-    {
-      imageSrc: "/spmoi3.png",
-      name: "Đặc sản mới 3",
-      price: "LIÊN HỆ",
-    },
-    {
-      imageSrc: "/spmoi4.png",
-      name: "Đặc sản mới 4",
-      price: "LIÊN HỆ",
-    },
-  ];
+    loadProducts();
 
-  // Chọn danh sách dựa trên tab
-  const productsToShow = key === "banchay" ? bestSellers : newProducts;
+    return () => controller.abort();
+  }, []);
+
+  const { bestSellers, newArrivals } = useMemo(() => {
+    if (!products.length) {
+      return { bestSellers: [], newArrivals: [] };
+    }
+
+    const best = products.filter((item) => item.isBestSeller);
+    const newest = products.filter((item) => item.isNew);
+
+    return {
+      bestSellers: best.length ? best : products.slice(0, 4),
+      newArrivals: newest.length ? newest : [...products].reverse().slice(0, 4),
+    };
+  }, [products]);
+
+  const productsToShow = key === "banchay" ? bestSellers : newArrivals;
 
   return (
     <div className="product-section mt-2">
@@ -109,13 +96,26 @@ function ProductSection() {
         </Row>
 
         {/* --- GRID sản phẩm (tự thay đổi theo Tab) --- */}
-        <Row className="g-2 product-grid">
-          {productsToShow.map((product, index) => (
-            <Col key={index} xs={6} sm={3} lg>
-              <ProductCard {...product} />
-            </Col>
-          ))}
-        </Row>
+        {error && <p className="product-section-error">{error}</p>}
+        {!error && (
+          <>
+            {loading && (
+              <p className="product-section-status">Đang tải sản phẩm...</p>
+            )}
+            {!loading && !productsToShow.length && (
+              <p className="product-section-status">
+                Hiện chưa có sản phẩm để hiển thị.
+              </p>
+            )}
+            <Row className="g-2 product-grid">
+              {productsToShow.map((product) => (
+                <Col key={product.id} xs={6} sm={3} lg>
+                  <ProductCard product={product} />
+                </Col>
+              ))}
+            </Row>
+          </>
+        )}
       </Container>
     </div>
   );

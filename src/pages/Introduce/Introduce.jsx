@@ -1,5 +1,6 @@
 import "./Introduce.css"; // Quan trọng: Import file CSS vào đây
 import { Container } from "react-bootstrap";
+import { NavLink } from "react-router-dom";
 
 const Introduce = () => {
   return (
@@ -7,7 +8,10 @@ const Introduce = () => {
       <div className="page-header-top bg-gray-100 py-3">
         <Container>
           <div className="breadcrumb text-sm text-muted">
-            Trang chủ » <span className="text-primary"> Giới thiệu</span>
+            <NavLink to="/" className="text-muted text-decoration-none">
+              Trang chủ&nbsp;
+            </NavLink>{" "}
+            /&nbsp; <span className="fw-bold"> Giới thiệu</span>
           </div>
         </Container>
       </div>

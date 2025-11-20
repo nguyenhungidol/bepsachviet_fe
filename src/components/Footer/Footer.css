@@ -72,15 +72,16 @@
 .footer-copyright-section {
   background-color: var(--dark-green);
   color: var(--text-color);
-  padding: 15px 0;
+  padding: 10px 0;
   font-size: 14px;
 }
 
 .copyright-text {
   margin-bottom: 0;
+  text-align: center;
 }
 
-.copyright-links li {
+/* .copyright-links li {
   display: inline-block;
   margin-left: 15px;
 }
@@ -94,7 +95,8 @@
 
 .copyright-links a:hover {
   color: var(--link-hover);
-}
+} */
+*/
 
 /* Nút nổi và Nút cuộn lên đầu trang */
 .floating-buttons {

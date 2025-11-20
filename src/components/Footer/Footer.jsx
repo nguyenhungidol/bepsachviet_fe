@@ -136,13 +136,11 @@ function Footer() {
       <div className="footer-copyright-section">
         <Container>
           <Row className="align-items-center">
-            <Col md={6} xs={12}>
-              <p className="copyright-text">
-                Copyright 2025 © Giao diện Bếp sạch Việt
-              </p>
-            </Col>
-            <Col md={6} xs={12} className="text-md-end text-center">
-              <ul className="copyright-links list-unstyled d-flex justify-content-center justify-content-md-end">
+            <p className="copyright-text">
+              Copyright 2025 © Giao diện Bếp sạch Việt
+            </p>
+            {/* <Col md={6} xs={12} className="text-md-end text-center">
+              {/* <ul className="copyright-links list-unstyled d-flex justify-content-center justify-content-md-end">
                 <li>
                   <a href="/">TRANG CHỦ</a>
                 </li>
@@ -161,8 +159,8 @@ function Footer() {
                 <li>
                   <a href="/lien-he">LIÊN HỆ</a>
                 </li>
-              </ul>
-            </Col>
+              </ul> */}
+            {/* </Col> */}
           </Row>
         </Container>
       </div>

@@ -8,7 +8,10 @@ const RecruitAgents = () => {
       <div className="page-header-top bg-gray-100 py-3">
         <Container>
           <div className="breadcrumb text-sm text-muted">
-            Trang chủ » <span className="text-primary">Tuyển đại lý</span>
+            <NavLink to="/" className="text-muted text-decoration-none">
+              Trang chủ&nbsp;
+            </NavLink>{" "}
+            /&nbsp; <span className="fw-bold">Tuyển đại lý</span>
           </div>
         </Container>
       </div>

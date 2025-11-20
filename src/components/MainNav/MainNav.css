@@ -5,6 +5,38 @@
   z-index: 100;
 }
 
+.main-nav--sticky {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1200;
+  transform: translateY(-120%);
+  transition: transform 0.45s ease, box-shadow 0.3s ease;
+}
+
+.main-nav--sticky.main-nav--visible {
+  transform: translateY(0);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.main-nav-placeholder {
+  width: 100%;
+}
+
+/* Ghi đè trạng thái Active mặc định của Bootstrap trong Dropdown */
+.nav-dropdown .dropdown-item.active,
+.nav-dropdown .dropdown-item:active {
+  background-color: transparent !important; /* Xóa màu nền xanh */
+  color: #212529 !important; /* Đưa chữ về màu đen mặc định (hoặc màu bạn muốn) */
+}
+
+/* Đảm bảo khi di chuột vào vẫn hiện màu xanh lá của bạn (nếu muốn giữ hover) */
+.nav-dropdown .dropdown-item.active:hover {
+  background-color: #28a745 !important;
+  color: white !important;
+}
+
 .nav-content {
   padding: 0;
 }

@@ -1,6 +1,8 @@
-import { Container, Row, Col } from "react-bootstrap";
-import "./News.css"; // File CSS cho trang Tin Tức
+import "./News.css";
 import Sidebar from "../Home/Sidebar/Sidebar";
+
+import { Container, Row, Col } from "react-bootstrap";
+import { NavLink } from "react-router-dom";
 
 // Component con: Thẻ Bài viết nhỏ (Dùng cho Tin nổi bật)
 const FeaturedNewsItem = ({ imageSrc, title, link }) => (
@@ -51,11 +53,13 @@ const RelatedProductCard = ({ imageSrc, name, rating, price, link }) => (
 function News() {
   return (
     <div className="news-page bg-light">
-      {/* Breadcrumb và Header Top Bar (Giả lập) */}
       <div className="page-header-top bg-gray-100 py-3 mb-4">
         <Container>
           <div className="breadcrumb text-sm text-muted">
-            Trang chủ » <span className="text-primary">Tin tức</span>
+            <NavLink to="/" className="text-muted text-decoration-none">
+              Trang chủ&nbsp;
+            </NavLink>{" "}
+            /&nbsp; <span className="fw-bold">Tin tức</span>
           </div>
         </Container>
       </div>

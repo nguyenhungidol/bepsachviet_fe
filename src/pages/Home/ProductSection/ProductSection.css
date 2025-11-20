@@ -81,3 +81,16 @@
     margin-bottom: 20px;
   }
 }
+
+.product-section-status {
+  text-align: center;
+  color: var(--text-gray);
+  margin: 1rem 0;
+}
+
+.product-section-error {
+  text-align: center;
+  color: #d9534f;
+  margin: 1rem 0;
+  font-weight: 600;
+}
