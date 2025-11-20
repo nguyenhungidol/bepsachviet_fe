@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { fetchActiveCategories } from "../../../services/categoryService";
 import "./Sidebar.css";
 
-function Sidebar() {
+function Sidebar({
+  onCategorySelect,
+  selectedCategoryId,
+  showAllOption = false,
+}) {
   const [categories, setCategories] = useState([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -17,7 +22,18 @@ function Sidebar() {
         const activeCategories = await fetchActiveCategories({
           signal: controller.signal,
         });
-        setCategories(activeCategories);
+        const enrichedCategories = showAllOption
+          ? [
+              {
+                categoryId: "all",
+                name: "Tất cả sản phẩm",
+                slug: "all-products",
+              },
+              ...activeCategories,
+            ]
+          : activeCategories;
+
+        setCategories(enrichedCategories);
         setActiveIndex(0);
         setError("");
       } catch (err) {
@@ -33,7 +49,51 @@ function Sidebar() {
 
     loadCategories();
     return () => controller.abort();
-  }, []);
+  }, [showAllOption]);
+
+  useEffect(() => {
+    if (!categories.length) return;
+
+    if (!selectedCategoryId) {
+      if (showAllOption) {
+        setActiveIndex(0);
+      }
+      return;
+    }
+
+    const idx = categories.findIndex(
+      (cat) => cat?.categoryId === selectedCategoryId
+    );
+    if (idx >= 0 && idx !== activeIndex) {
+      setActiveIndex(idx);
+    }
+  }, [categories, selectedCategoryId, showAllOption, activeIndex]);
+
+  const handleCategoryClick = (category, index) => {
+    if (!onCategorySelect) return;
+    onCategorySelect(category);
+    setActiveIndex(index);
+  };
+
+  const buildCategoryLink = (category, fallbackSlug) => {
+    if (!category || category.categoryId === "all") {
+      return "/san-pham";
+    }
+
+    const params = new URLSearchParams();
+    const target = category.categoryId || category.slug || fallbackSlug;
+
+    if (target) {
+      params.set("categoryId", target);
+    }
+
+    if (category.name) {
+      params.set("categoryName", category.name);
+    }
+
+    const query = params.toString();
+    return query ? `/san-pham?${query}` : "/san-pham";
+  };
 
   const renderList = () => {
     if (loading) {
@@ -52,16 +112,27 @@ function Sidebar() {
       const slug = (cat?.name || `category-${index}`)
         .toLowerCase()
         .replace(/\s+/g, "-");
+      const linkTarget = buildCategoryLink(cat, slug);
+      const key = cat?.categoryId || slug;
+      const className = `sidebar-item ${index === activeIndex ? "active" : ""}`;
+
+      if (onCategorySelect) {
+        return (
+          <button
+            key={key}
+            type="button"
+            className={className}
+            onClick={() => handleCategoryClick(cat, index)}
+          >
+            {cat?.name || "Danh mục chưa đặt tên"}
+          </button>
+        );
+      }
 
       return (
-        <a
-          key={cat?.categoryId || index}
-          href={`#${slug}`}
-          className={`sidebar-item ${index === activeIndex ? "active" : ""}`}
-          onClick={() => setActiveIndex(index)}
-        >
+        <Link key={key} to={linkTarget} className={className}>
           {cat?.name || "Danh mục chưa đặt tên"}
-        </a>
+        </Link>
       );
     });
   };

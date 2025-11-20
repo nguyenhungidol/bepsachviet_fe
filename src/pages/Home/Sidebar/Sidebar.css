@@ -23,14 +23,23 @@
 }
 
 .sidebar-item {
+  display: block;
+  width: 100%;
   padding: 13px 18px;
   color: #333;
   text-decoration: none;
   font-size: 14px;
+  border: none;
   border-bottom: 1px solid #333;
   transition: all 0.3s ease;
   position: relative;
   background: white;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sidebar-item:focus {
+  outline: none;
 }
 
 .sidebar-item:last-child {

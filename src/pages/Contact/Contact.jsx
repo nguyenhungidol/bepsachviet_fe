@@ -1,6 +1,7 @@
 import { Form, Button } from "react-bootstrap";
 import "./Contact.css";
 import { Container } from "react-bootstrap";
+import { NavLink } from "react-router-dom";
 
 const ContactForm = () => (
   <div className="bg-white p-4 shadow rounded h-100">
@@ -90,7 +91,11 @@ const ContactPage = () => (
     <div className="page-header-top bg-gray-100 py-3">
       <Container>
         <div className="breadcrumb text-sm text-muted">
-          Trang chủ » <span className="text-primary">Liên hệ</span>
+          <NavLink to="/" className="text-muted text-decoration-none">
+            Trang chủ&nbsp;
+          </NavLink>{" "}
+          /&nbsp;
+          <span className="fw-bold"> Liên hệ</span>
         </div>
       </Container>
     </div>

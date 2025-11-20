@@ -81,7 +81,10 @@ const Login = () => {
       <div className="page-header-top bg-gray-100 py-3 ">
         <Container>
           <div className="breadcrumb text-sm text-muted">
-            Trang chủ » <span className="text-primary">Đăng nhập</span>
+            <NavLink to="/" className="text-muted text-decoration-none">
+              Trang chủ&nbsp;
+            </NavLink>{" "}
+            /&nbsp; <span className="fw-bold">Đăng nhập</span>
           </div>
         </Container>
       </div>
