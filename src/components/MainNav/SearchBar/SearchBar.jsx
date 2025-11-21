@@ -1,5 +1,5 @@
-import { useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useCallback, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./SearchBar.css";
 
 const HISTORY_KEY = "bv_search_history";
@@ -20,10 +20,29 @@ const loadHistory = () => {
 
 function SearchBar() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [query, setQuery] = useState("");
   const [history, setHistory] = useState(loadHistory);
   const [filtered, setFiltered] = useState(() => loadHistory());
   const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search || "");
+    const searchParam = params.get("search") || "";
+    setQuery(searchParam);
+    setShow(false);
+  }, [location.search]);
+
+  useEffect(() => {
+    if (!query.trim()) {
+      setFiltered(history);
+      return;
+    }
+    const results = history.filter((item) =>
+      item.toLowerCase().includes(query.toLowerCase())
+    );
+    setFiltered(results);
+  }, [query, history]);
 
   const rememberSearch = useCallback((term) => {
     const normalized = term.trim();

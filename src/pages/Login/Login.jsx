@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Form, Button, Container, Alert } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
+
 import "./Login.css";
 import { loginUser, saveAuthData } from "../../services/userService";
 
@@ -12,7 +14,32 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState("");
   const [apiSuccess, setApiSuccess] = useState("");
+  const [recentAccounts, setRecentAccounts] = useState([]);
+  const [showEmailSuggestions, setShowEmailSuggestions] = useState(false);
+  const MAX_RECENT_LOGINS = 5;
   const navigate = useNavigate();
+
+  const persistRecentAccounts = (accounts) => {
+    try {
+      localStorage.setItem("bv_recent_accounts", JSON.stringify(accounts));
+    } catch (error) {
+      console.warn("Failed to persist recent accounts", error);
+    }
+  };
+  const loadRecentAccounts = () => {
+    try {
+      const raw = localStorage.getItem("bv_recent_accounts");
+      const parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+      console.warn("Failed to load recent accounts", error);
+      return [];
+    }
+  };
+
+  useEffect(() => {
+    setRecentAccounts(loadRecentAccounts());
+  }, []);
 
   const validateForm = () => {
     const newErrors = {};
@@ -30,6 +57,43 @@ const Login = () => {
     }
 
     return newErrors;
+  };
+
+  const rememberAccount = (account) => {
+    if (!account?.email) return;
+    setRecentAccounts((prev) => {
+      const filtered = prev.filter(
+        (item) => item.email.toLowerCase() !== account.email.toLowerCase()
+      );
+      const next = [
+        {
+          email: account.email,
+          name: account.name || account.email,
+          lastLoginAt: new Date().toISOString(),
+        },
+        ...filtered,
+      ].slice(0, MAX_RECENT_LOGINS);
+      persistRecentAccounts(next);
+      return next;
+    });
+  };
+
+  const handleUseRecentAccount = (value) => {
+    if (!value) return;
+    setEmail(value);
+    setErrors((prev) => ({ ...prev, email: "" }));
+    setApiError("");
+    setShowEmailSuggestions(false);
+  };
+
+  const handleEmailFocus = () => {
+    if (recentAccounts.length > 0) {
+      setShowEmailSuggestions(true);
+    }
+  };
+
+  const handleEmailBlur = () => {
+    setTimeout(() => setShowEmailSuggestions(false), 150);
   };
 
   const handleSubmit = async (e) => {
@@ -63,10 +127,16 @@ const Login = () => {
       saveAuthData({
         token: data.token,
         user: userPayload,
+        remember: rememberMe,
       });
 
+      rememberAccount(userPayload);
+
+      const normalizedRole = (userPayload.role || "ROLE_USER").toUpperCase();
+      const nextPath = normalizedRole === "ROLE_ADMIN" ? "/admin" : "/";
+
       setTimeout(() => {
-        navigate("/");
+        navigate(nextPath, { replace: true });
       }, 1000);
     } catch (error) {
       console.error("Login error:", error);
@@ -118,19 +188,54 @@ const Login = () => {
                 {/* Email Field */}
                 <Form.Group className="mb-4">
                   <Form.Label className="form-label">
-                    <span>Email*</span>
+                    <span>Email *</span>
                   </Form.Label>
-                  <Form.Control
-                    type="email"
-                    placeholder="Nhập email của bạn"
-                    value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      if (errors.email) setErrors({ ...errors, email: "" });
-                    }}
-                    isInvalid={!!errors.email}
-                    className="form-input"
-                  />
+                  <div className="email-field-wrapper">
+                    <Form.Control
+                      type="email"
+                      placeholder="Nhập email của bạn"
+                      value={email}
+                      onFocus={handleEmailFocus}
+                      onBlur={handleEmailBlur}
+                      onChange={(e) => {
+                        const next = e.target.value;
+                        setEmail(next);
+                        if (errors.email) setErrors({ ...errors, email: "" });
+                        if (
+                          next.trim().length === 0 &&
+                          recentAccounts.length > 0
+                        ) {
+                          setShowEmailSuggestions(true);
+                        } else {
+                          setShowEmailSuggestions(false);
+                        }
+                      }}
+                      isInvalid={!!errors.email}
+                      className="form-input"
+                      autoComplete="username"
+                    />
+                    {showEmailSuggestions && recentAccounts.length > 0 && (
+                      <div className="email-suggestions">
+                        {recentAccounts.map((account) => (
+                          <button
+                            type="button"
+                            key={account.email}
+                            className="email-suggestion"
+                            onMouseDown={() =>
+                              handleUseRecentAccount(account.email)
+                            }
+                          >
+                            <span className="email-suggestion__name">
+                              {account.name || account.email}
+                            </span>
+                            <span className="email-suggestion__email">
+                              {account.email}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                   {errors.email && (
                     <Form.Control.Feedback type="invalid" className="d-block">
                       {errors.email}
@@ -154,6 +259,7 @@ const Login = () => {
                     }}
                     isInvalid={!!errors.password}
                     className="form-input"
+                    autoComplete="current-password"
                   />
                   {errors.password && (
                     <Form.Control.Feedback type="invalid" className="d-block">
@@ -196,21 +302,6 @@ const Login = () => {
                   </p>
                 </div>
               </form>
-
-              {/* Social Login (Optional) */}
-              <div className="social-login mt-4 pt-4 border-top">
-                <p className="text-center text-muted mb-3">
-                  Hoặc đăng nhập bằng
-                </p>
-                <div className="d-flex gap-3">
-                  <Button className="social-btn facebook-btn flex-grow-1">
-                    <i className="bi bi-facebook"></i> Facebook
-                  </Button>
-                  <Button className="social-btn google-btn flex-grow-1">
-                    <i className="bi bi-google"></i> Google
-                  </Button>
-                </div>
-              </div>
             </div>
           </div>
         </Container>

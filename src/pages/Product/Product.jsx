@@ -10,6 +10,7 @@ import {
   fetchProducts,
   fetchProductsByCategory,
 } from "../../services/productService";
+import LikeProduct from "../../components/LikeProduct/LikeProduct.jsx";
 
 const MAX_PRICE_VALUE = Number.MAX_SAFE_INTEGER;
 const priceFormatter = new Intl.NumberFormat("vi-VN", {
@@ -227,7 +228,7 @@ function Store() {
     [rawProducts, priceFilter]
   );
   const featuredProducts = useMemo(
-    () => filteredProducts.slice(0, 3),
+    () => filteredProducts.slice(0, 5),
     [filteredProducts]
   );
   const productCount = filteredProducts.length;
@@ -478,33 +479,10 @@ function Store() {
 
             {/* Có thể bạn thích */}
             <div className="sidebar-section mt-4 bg-white shadow-sm rounded">
-              <h4 className="sidebar-heading green-bg text-white p-3 rounded-top">
-                CÓ THỂ BẠN SẼ THÍCH
-              </h4>
-              <div className="p-3">
-                {featuredProducts.length === 0 && !loading && (
-                  <p className="mb-0">Chưa có sản phẩm để gợi ý.</p>
-                )}
-                {featuredProducts.map((item) => (
-                  <div key={item.id} className="featured-item d-flex mb-3">
-                    <img
-                      src={
-                        item.imageSrc ||
-                        item.imageUrl ||
-                        "https://via.placeholder.com/80x80?text=No+Image"
-                      }
-                      alt={item.name}
-                      className="featured-image me-2"
-                    />
-                    <div className="featured-details">
-                      <p className="featured-name mb-1">{item.name}</p>
-                      <p className="featured-price mb-0">
-                        {item.priceLabel || item.price || "LIÊN HỆ"}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <LikeProduct
+                featuredProducts={featuredProducts}
+                loading={loading}
+              />
             </div>
           </Col>
 

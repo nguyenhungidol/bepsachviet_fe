@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Form, Button, Container, Alert } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
+
 import "./Register.css";
 import { registerUser } from "../../services/userService";
 

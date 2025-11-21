@@ -1,8 +1,11 @@
 import "./News.css";
 import Sidebar from "../Home/Sidebar/Sidebar";
+import { fetchProducts } from "../../services/productService";
+import LikeProduct from "../../components/LikeProduct/LikeProduct";
 
 import { Container, Row, Col } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 // Component con: Thẻ Bài viết nhỏ (Dùng cho Tin nổi bật)
 const FeaturedNewsItem = ({ imageSrc, title, link }) => (
@@ -33,24 +36,24 @@ const ArticleCard = ({ imageSrc, title, excerpt, link }) => (
   </div>
 );
 
-// Component con: Thẻ Sản phẩm liên quan (Dùng cho "Có thể bạn sẽ thích")
-const RelatedProductCard = ({ imageSrc, name, rating, price, link }) => (
-  <a
-    href={link}
-    className="related-product-card d-block text-decoration-none mb-3"
-  >
-    <div className="d-flex align-items-center">
-      <img src={imageSrc} alt={name} className="related-product-img me-3" />
-      <div className="related-product-info">
-        <p className="related-product-name mb-1">{name}</p>
-        <div className="related-product-rating text-warning mb-1">{rating}</div>
-        <p className="related-product-price mb-0">{price}</p>
-      </div>
-    </div>
-  </a>
-);
-
 function News() {
+  const [suggestedProducts, setSuggestedProducts] = useState([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+  useEffect(() => {
+    const loadSuggestedProducts = async () => {
+      try {
+        const data = await fetchProducts(); // Lấy tất cả sản phẩm
+        // Lấy ngẫu nhiên hoặc lấy 5 sản phẩm đầu tiên
+        const topProducts = data.slice(0, 5);
+        setSuggestedProducts(topProducts);
+      } catch (error) {
+        console.error("Lỗi tải sản phẩm gợi ý bên trang tin tức:", error);
+      } finally {
+        setLoadingProducts(false);
+      }
+    };
+    loadSuggestedProducts();
+  }, []);
   return (
     <div className="news-page bg-light">
       <div className="page-header-top bg-gray-100 py-3 mb-4">
@@ -107,32 +110,10 @@ function News() {
 
             {/* 3. CÓ THỂ BẠN SẼ THÍCH (Sản phẩm liên quan) */}
             <div className="sidebar-section mb-4 bg-white shadow-sm rounded">
-              <h4 className="sidebar-heading bg-success-dark text-white p-3 rounded-top">
-                CÓ THỂ BẠN SẼ THÍCH
-              </h4>
-              <div className="p-3">
-                <RelatedProductCard
-                  imageSrc="/path/to/vit-u-xi-dau-thumb.png"
-                  name="Đặc sản Vân Đình: Vịt ủ xì dầu"
-                  rating="⭐⭐⭐"
-                  price="0 đ"
-                  link="/san-pham/vit-u-xi-dau"
-                />
-                <RelatedProductCard
-                  imageSrc="/path/to/cha-vit-thuymanh-thumb.png"
-                  name="Đặc sản Vân Đình: Chả vịt Thúy Mạnh"
-                  rating="⭐⭐⭐⭐"
-                  price="0 đ"
-                  link="/san-pham/cha-vit-thuymanh"
-                />
-                <RelatedProductCard
-                  imageSrc="/path/to/tai-heo-thumb.png"
-                  name="Tai heo ủ xì dầu"
-                  rating="⭐⭐"
-                  price="0 đ"
-                  link="/san-pham/tai-heo"
-                />
-              </div>
+              <LikeProduct
+                featuredProducts={suggestedProducts}
+                loading={loadingProducts}
+              />
             </div>
           </Col>
 
