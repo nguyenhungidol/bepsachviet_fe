@@ -59,6 +59,7 @@ function TopBar() {
   };
 
   const displayName = userInfo?.name || userInfo?.email;
+  const isAdmin = (userInfo?.role || "").toUpperCase() === "ROLE_ADMIN";
 
   return (
     <div className="top-bar">
@@ -97,6 +98,18 @@ function TopBar() {
                     <div className="user-info-name">{userInfo.name}</div>
                     <div className="user-info-email">{userInfo.email}</div>
                   </div>
+                  {isAdmin && (
+                    <button
+                      type="button"
+                      className="user-menu-item"
+                      onClick={() => {
+                        setMenuOpen(false);
+                        navigate("/admin");
+                      }}
+                    >
+                      Khu vực quản trị
+                    </button>
+                  )}
                   <button
                     type="button"
                     className="user-menu-item"

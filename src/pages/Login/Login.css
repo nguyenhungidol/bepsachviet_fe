@@ -87,6 +87,11 @@
   color: #666;
 }
 
+.remember-me .form-check-input {
+  border-color: #58616b; /* Màu viền xám nhạt */
+  cursor: pointer;
+}
+
 .forgot-password-link {
   color: #198754;
   text-decoration: none;
@@ -182,6 +187,92 @@
 .social-btn:focus {
   outline: none;
   box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.15);
+}
+
+.email-field-wrapper {
+  position: relative;
+}
+
+.email-suggestions {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 5;
+  background: #fff;
+  border: 1px solid #d3e3da;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.email-suggestion {
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  cursor: pointer;
+}
+
+.email-suggestion:hover {
+  background: #f1f8f4;
+}
+
+.email-suggestion__name {
+  font-weight: 600;
+  color: #0f5132;
+}
+
+.email-suggestion__email {
+  font-size: 0.85rem;
+  color: #495057;
+}
+
+.recent-accounts {
+  border: 1px solid #e1efe6;
+  border-radius: 12px;
+  padding: 16px;
+  background: #f8fbf9;
+}
+
+.recent-account-list {
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.recent-account-item {
+  border: 1px solid #d3e3da;
+  border-radius: 10px;
+  padding: 12px;
+  background: #fff;
+  width: 100%;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.recent-account-item:hover {
+  border-color: #198754;
+  box-shadow: 0 3px 10px rgba(25, 135, 84, 0.15);
+}
+
+.recent-account-name {
+  font-weight: 600;
+  color: #0f5132;
+}
+
+.recent-account-email,
+.recent-account-meta {
+  font-size: 0.85rem;
+  color: #6c757d;
 }
 
 /* Responsive */

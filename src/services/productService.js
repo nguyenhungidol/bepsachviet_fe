@@ -1,6 +1,11 @@
 import { apiRequest } from "./apiClient";
 
 const DEFAULT_PLACEHOLDER = "https://via.placeholder.com/300x300?text=No+Image";
+const CDN_BASE_URL = (
+  import.meta?.env?.VITE_ASSET_CDN_URL ||
+  import.meta?.env?.VITE_IMAGE_BASE_URL ||
+  ""
+).replace(/\/$/, "");
 
 const normalizeList = (data) => {
   if (Array.isArray(data)) return data;
@@ -56,6 +61,38 @@ const deriveId = (product) =>
   product?.name ||
   generateFallbackId();
 
+const resolveStorageUrl = (value) => {
+  if (!value) return null;
+
+  if (typeof value === "string") {
+    if (/^https?:/i.test(value)) {
+      return value;
+    }
+    if (CDN_BASE_URL) {
+      return `${CDN_BASE_URL}/${value.replace(/^\/+/, "")}`;
+    }
+    return value;
+  }
+
+  if (Array.isArray(value)) {
+    const firstValid = value.find(Boolean);
+    return resolveStorageUrl(firstValid);
+  }
+
+  if (typeof value === "object") {
+    return resolveStorageUrl(
+      value.url ||
+        value.publicUrl ||
+        value.secureUrl ||
+        value.signedUrl ||
+        value.path ||
+        value.key
+    );
+  }
+
+  return null;
+};
+
 const normalizeProduct = (product) => {
   if (!product || typeof product !== "object") {
     return null;
@@ -76,12 +113,20 @@ const normalizeProduct = (product) => {
       return false;
     });
 
+  const storageImage =
+    resolveStorageUrl(product.imageStorageUrl) ||
+    resolveStorageUrl(product.imageStorage) ||
+    resolveStorageUrl(product.storageImage) ||
+    resolveStorageUrl(product.imageKey);
+
   const normalized = {
     id: deriveId(product),
     productId: product.productId || product.id || null,
     name: product.name || product.title || "Sản phẩm",
     description: product.description || product.detail || "",
     imageSrc:
+      product.imageSrc ||
+      storageImage ||
       product.imageUrl ||
       product.image ||
       product.thumbnail ||

@@ -12,9 +12,14 @@ const jsonOptions = (payload) => ({
   body: JSON.stringify(payload),
 });
 
+const readFromStorages = (key) => {
+  if (typeof window === "undefined") return null;
+  return window.localStorage.getItem(key) ?? window.sessionStorage.getItem(key);
+};
+
 const parseStoredUser = () => {
   try {
-    const raw = localStorage.getItem(USER_INFO_KEY);
+    const raw = readFromStorages(USER_INFO_KEY);
     return raw ? JSON.parse(raw) : null;
   } catch (error) {
     console.error("Failed to parse stored user", error);
@@ -36,25 +41,36 @@ export const registerUser = async (payload) => {
   return apiRequest("/register", jsonOptions(payload));
 };
 
-export const saveAuthData = ({ token, user }) => {
+export const saveAuthData = ({ token, user, remember = true }) => {
+  if (typeof window === "undefined") return;
+  const persistentStore = remember
+    ? window.localStorage
+    : window.sessionStorage;
+  const secondaryStore = remember ? window.sessionStorage : window.localStorage;
+
   if (token) {
-    localStorage.setItem(AUTH_TOKEN_KEY, token);
+    persistentStore.setItem(AUTH_TOKEN_KEY, token);
+    secondaryStore.removeItem(AUTH_TOKEN_KEY);
   }
   if (user) {
-    localStorage.setItem(USER_INFO_KEY, JSON.stringify(user));
+    persistentStore.setItem(USER_INFO_KEY, JSON.stringify(user));
+    secondaryStore.removeItem(USER_INFO_KEY);
   }
   emitAuthStateChange();
 };
 
 export const clearAuthData = () => {
-  localStorage.removeItem(AUTH_TOKEN_KEY);
-  localStorage.removeItem(USER_INFO_KEY);
+  if (typeof window === "undefined") return;
+  window.localStorage.removeItem(AUTH_TOKEN_KEY);
+  window.localStorage.removeItem(USER_INFO_KEY);
+  window.sessionStorage.removeItem(AUTH_TOKEN_KEY);
+  window.sessionStorage.removeItem(USER_INFO_KEY);
   emitAuthStateChange();
 };
 
 export const getStoredUser = () => parseStoredUser();
 
-export const getStoredToken = () => localStorage.getItem(AUTH_TOKEN_KEY);
+export const getStoredToken = () => readFromStorages(AUTH_TOKEN_KEY);
 
 const userService = {
   loginUser,
