@@ -88,7 +88,7 @@ function SearchBar() {
       rememberSearch(normalized);
       setQuery(normalized);
       setShow(false);
-      navigate(`/san-pham?search=${encodeURIComponent(normalized)}`);
+      navigate(`/tim-kiem?q=${encodeURIComponent(normalized)}`);
     },
     [navigate, rememberSearch]
   );
@@ -116,7 +116,7 @@ function SearchBar() {
       <form className="search-box" onSubmit={handleSubmit}>
         <input
           className="search-input"
-          placeholder="Tìm kiếm sản phẩm..."
+          placeholder="Tìm kiếm sản phẩm, bài viết..."
           value={query}
           onChange={handleChange}
           onBlur={() => setTimeout(() => setShow(false), 150)}

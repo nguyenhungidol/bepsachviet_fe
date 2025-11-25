@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const LikeProduct = ({ featuredProducts, loading }) => {
   return (
     <>
@@ -9,7 +11,11 @@ const LikeProduct = ({ featuredProducts, loading }) => {
           <p className="mb-0">Chưa có sản phẩm để gợi ý.</p>
         )}
         {featuredProducts.map((item) => (
-          <div key={item.id} className="featured-item d-flex mb-3">
+          <Link
+            key={item.id}
+            to={`/san-pham/${item.productId || item.id}`}
+            className="featured-item d-flex mb-3 text-decoration-none"
+          >
             <img
               src={
                 item.imageSrc ||
@@ -25,7 +31,7 @@ const LikeProduct = ({ featuredProducts, loading }) => {
                 {item.priceLabel || item.price || "LIÊN HỆ"}
               </p>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </>

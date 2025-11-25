@@ -1,4 +1,3 @@
-/* Màu sắc chính dựa trên hình ảnh */
 :root {
   --main-green: #1d7a3d; /* Xanh lá đậm chính */
   --dark-green: #14592a; /* Xanh lá cực đậm cho copyright */
@@ -80,23 +79,6 @@
   margin-bottom: 0;
   text-align: center;
 }
-
-/* .copyright-links li {
-  display: inline-block;
-  margin-left: 15px;
-}
-
-.copyright-links a {
-  color: var(--text-color);
-  text-decoration: none;
-  text-transform: uppercase;
-  font-weight: bold;
-}
-
-.copyright-links a:hover {
-  color: var(--link-hover);
-} */
-*/
 
 /* Nút nổi và Nút cuộn lên đầu trang */
 .floating-buttons {

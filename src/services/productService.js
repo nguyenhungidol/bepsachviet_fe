@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 import { apiRequest } from "./apiClient";
 
 const DEFAULT_PLACEHOLDER = "https://via.placeholder.com/300x300?text=No+Image";
@@ -132,10 +133,16 @@ const normalizeProduct = (product) => {
       product.thumbnail ||
       product.coverImage ||
       DEFAULT_PLACEHOLDER,
-    ocUrl: product.ocopImageUrl || product.ocopUrl || product.ocopBadgeUrl,
+    ocUrl:
+      product.ocUrl ||
+      product.ocopImageUrl ||
+      product.ocopUrl ||
+      product.ocopBadgeUrl ||
+      null,
     price: product.price,
     priceLabel: formatPriceLabel(product.price ?? product.priceLabel),
     categoryId: product.categoryId || product.category?.categoryId || null,
+    categoryName: product.categoryName || product.category?.name || null,
     isBestSeller:
       product.bestSeller ?? product.isBestSeller ?? hasTag("BEST") ?? false,
     isNew: product.isNew ?? product.newProduct ?? hasTag("NEW") ?? false,
@@ -151,13 +158,21 @@ export const fetchProducts = async ({ signal, search } = {}) => {
 };
 
 export const fetchProductById = async (productId, { signal } = {}) => {
-  if (!productId) throw new Error("productId is required");
+  if (!productId) {
+    const message = "Thiếu mã sản phẩm.";
+    toast.error(message);
+    return Promise.reject(new Error(message));
+  }
   const data = await apiRequest(`/products/${productId}`, { signal });
   return normalizeProduct(data);
 };
 
 export const fetchProductsByCategory = async (categoryId, { signal } = {}) => {
-  if (!categoryId) throw new Error("categoryId is required");
+  if (!categoryId) {
+    const message = "Thiếu mã danh mục.";
+    toast.error(message);
+    return Promise.reject(new Error(message));
+  }
   const data = await apiRequest(`/categories/${categoryId}/products`, {
     signal,
   });

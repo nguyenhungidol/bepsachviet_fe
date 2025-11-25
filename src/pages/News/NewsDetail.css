@@ -1,0 +1,284 @@
+/* NewsDetail.css */
+
+.news-detail-page {
+  min-height: 60vh;
+}
+
+.article-thumbnail {
+  width: 100%;
+  max-height: 450px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.article-header {
+  margin-bottom: 1.5rem;
+}
+
+.article-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 0.75rem;
+}
+
+.article-meta-detail {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.article-meta-detail .author {
+  font-weight: 600;
+  color: #198754;
+}
+
+.article-body {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #444;
+}
+
+.article-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  margin: 1rem 0;
+}
+
+.article-body p {
+  margin-bottom: 1rem;
+}
+
+.article-body h2,
+.article-body h3,
+.article-body h4 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  color: #333;
+}
+
+/* Share section */
+.share-section {
+  border-top: 1px solid #e9ecef;
+  border-bottom: 1px solid #e9ecef;
+  padding: 1rem 0;
+  margin: 2rem 0;
+}
+
+.share-section h5 {
+  font-size: 0.95rem;
+  margin-bottom: 0.75rem;
+  color: #555;
+}
+
+.share-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* THAY THẾ TOÀN BỘ ĐOẠN .share-btn CŨ BẰNG ĐOẠN NÀY */
+.share-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px; /* Cố định chiều rộng */
+  height: 40px; /* Cố định chiều cao bằng chiều rộng */
+  border-radius: 50%; /* Bo tròn 100% */
+  padding: 0; /* Bỏ padding để icon ra giữa */
+
+  text-decoration: none;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s, opacity 0.2s;
+
+  /* QUAN TRỌNG: Ẩn chữ đi, chỉ hiện Icon */
+  font-size: 0;
+}
+
+.share-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-2px); /* Hiệu ứng bay lên nhẹ khi di chuột */
+}
+
+.share-btn.facebook {
+  background-color: #1877f2;
+}
+
+.share-btn.twitter {
+  background-color: #000000;
+}
+
+.share-btn.linkedin {
+  background-color: #0a66c2;
+}
+
+.share-btn.copy-link {
+  background-color: #6c757d;
+}
+
+.share-btn svg {
+  flex-shrink: 0;
+  width: 20px; /* Tăng kích thước icon lên xíu cho rõ */
+  height: 20px;
+  fill: currentColor;
+}
+
+/* Related posts */
+.related-posts-section {
+  margin-top: 2.5rem;
+}
+
+.related-posts-section h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #198754;
+  display: inline-block;
+}
+
+.related-post-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+  background: #fff;
+  height: 100%;
+}
+
+.related-post-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.related-post-card img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+
+.related-post-card .card-body {
+  padding: 0.75rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.related-post-card .card-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.related-post-card .card-title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.related-post-card .card-title a:hover {
+  color: #198754;
+}
+
+.related-post-card .card-text {
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: auto;
+}
+
+/* Comment section */
+.comment-section {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e9ecef;
+}
+
+.comment-section h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+/* Facebook comments plugin container */
+.fb-comments {
+  width: 100%;
+}
+
+/* Loading skeleton */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton-title {
+  height: 2rem;
+  width: 80%;
+  margin-bottom: 1rem;
+}
+
+.skeleton-meta {
+  height: 1rem;
+  width: 40%;
+  margin-bottom: 1.5rem;
+}
+
+.skeleton-image {
+  height: 350px;
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.skeleton-text {
+  height: 1rem;
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+.skeleton-text.short {
+  width: 60%;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .article-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .article-thumbnail {
+    max-height: 300px;
+  }
+
+  .share-buttons {
+    flex-direction: column;
+  }
+
+  .share-btn {
+    justify-content: center;
+  }
+}
