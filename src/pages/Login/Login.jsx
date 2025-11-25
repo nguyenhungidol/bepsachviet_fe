@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { Form, Button, Container, Alert } from "react-bootstrap";
+import { Form, Button, Container } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom";
+import { toast } from "react-toastify";
 
 import "./Login.css";
 import { loginUser, saveAuthData } from "../../services/userService";
@@ -12,8 +13,6 @@ const Login = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [apiError, setApiError] = useState("");
-  const [apiSuccess, setApiSuccess] = useState("");
   const [recentAccounts, setRecentAccounts] = useState([]);
   const [showEmailSuggestions, setShowEmailSuggestions] = useState(false);
   const MAX_RECENT_LOGINS = 5;
@@ -98,9 +97,6 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setApiError("");
-    setApiSuccess("");
-
     const newErrors = validateForm();
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -116,7 +112,7 @@ const Login = () => {
         rememberMe,
       });
 
-      setApiSuccess("Đăng nhập thành công!");
+      toast.success("Đăng nhập thành công!");
 
       const userPayload = data.user || {
         email: data.email || email,
@@ -140,7 +136,7 @@ const Login = () => {
       }, 1000);
     } catch (error) {
       console.error("Login error:", error);
-      setApiError(error.message || "Đăng nhập thất bại. Vui lòng thử lại.");
+      toast.error("Đăng nhập thất bại. Vui lòng thử lại.");
     } finally {
       setLoading(false);
     }
@@ -169,20 +165,6 @@ const Login = () => {
               >
                 Đăng Nhập
               </h1>
-
-              {/* Success Alert */}
-              {apiSuccess && (
-                <Alert variant="success" className="mb-3" role="alert">
-                  {apiSuccess}
-                </Alert>
-              )}
-
-              {/* Error Alert */}
-              {apiError && (
-                <Alert variant="danger" className="mb-3" role="alert">
-                  {apiError}
-                </Alert>
-              )}
 
               <form onSubmit={handleSubmit}>
                 {/* Email Field */}

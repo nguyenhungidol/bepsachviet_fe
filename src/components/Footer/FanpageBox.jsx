@@ -1,20 +1,17 @@
-// FanpageBox.jsx
 import { useEffect } from "react";
 
 function FanpageBox() {
   useEffect(() => {
-    // Thêm setTimeout để đảm bảo DOM đã sẵn sàng trước khi parse
     setTimeout(() => {
       if (window.FB) {
         window.FB.XFBML.parse();
       }
-    }, 100); // Đợi 0.1 giây
+    }, 100);
   }, []);
 
   return (
     <div className="footer-fanpage-box-wrapper">
       {" "}
-      {/* Thêm một wrapper bên ngoài để dễ dàng CSS */}
       <div
         className="fb-page"
         data-href="https://www.facebook.com/BepsachvietOfficial/"

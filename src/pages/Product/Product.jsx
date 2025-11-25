@@ -13,6 +13,7 @@ import {
 import LikeProduct from "../../components/LikeProduct/LikeProduct.jsx";
 
 const MAX_PRICE_VALUE = Number.MAX_SAFE_INTEGER;
+const ITEMS_PER_PAGE = 12;
 const priceFormatter = new Intl.NumberFormat("vi-VN", {
   style: "currency",
   currency: "VND",
@@ -48,6 +49,63 @@ const filterProductsByPrice = (items = [], range) => {
   });
 };
 
+const sortProducts = (items = [], sortOption) => {
+  if (!items.length) return items;
+
+  const sorted = [...items];
+
+  switch (sortOption) {
+    case "latest":
+      // Sort by createdAt descending (newest first)
+      return sorted.sort((a, b) => {
+        const dateA = new Date(a.createdAt || 0).getTime();
+        const dateB = new Date(b.createdAt || 0).getTime();
+        return dateB - dateA;
+      });
+
+    case "price-asc":
+      // Sort by price low to high
+      return sorted.sort((a, b) => {
+        const priceA =
+          getNumericPrice(a?.price ?? a?.priceLabel) ?? MAX_PRICE_VALUE;
+        const priceB =
+          getNumericPrice(b?.price ?? b?.priceLabel) ?? MAX_PRICE_VALUE;
+        return priceA - priceB;
+      });
+
+    case "price-desc":
+      // Sort by price high to low
+      return sorted.sort((a, b) => {
+        const priceA = getNumericPrice(a?.price ?? a?.priceLabel) ?? 0;
+        const priceB = getNumericPrice(b?.price ?? b?.priceLabel) ?? 0;
+        return priceB - priceA;
+      });
+
+    case "popular":
+      // Sort by popularity (views, sales count, etc.) - fallback to isBestSeller
+      return sorted.sort((a, b) => {
+        const popA = a.viewCount || a.salesCount || (a.isBestSeller ? 1 : 0);
+        const popB = b.viewCount || b.salesCount || (b.isBestSeller ? 1 : 0);
+        return popB - popA;
+      });
+
+    case "rating":
+      // Sort by rating descending
+      return sorted.sort((a, b) => {
+        const ratingA = a.rating || a.averageRating || 0;
+        const ratingB = b.rating || b.averageRating || 0;
+        return ratingB - ratingA;
+      });
+
+    case "relevance":
+      // Keep original order for search relevance
+      return sorted;
+
+    default:
+      return sorted;
+  }
+};
+
 const formatPriceValue = (value, fallbackLabel = "Không giới hạn") => {
   if (!Number.isFinite(value) || value === MAX_PRICE_VALUE) {
     return fallbackLabel;
@@ -67,6 +125,7 @@ function Store() {
   const [priceFilter, setPriceFilter] = useState(null);
   const [priceInputs, setPriceInputs] = useState({ min: "", max: "" });
   const [priceFilterError, setPriceFilterError] = useState("");
+  const [currentPage, setCurrentPage] = useState(0);
   const controllerRef = useRef();
   const [searchParams, setSearchParams] = useSearchParams();
   const categoryIdParam = searchParams.get("categoryId");
@@ -223,15 +282,79 @@ function Store() {
 
   useEffect(() => () => controllerRef.current?.abort(), []);
 
-  const filteredProducts = useMemo(
-    () => filterProductsByPrice(rawProducts, priceFilter),
-    [rawProducts, priceFilter]
+  // Apply price filter and then sort
+  const filteredAndSortedProducts = useMemo(() => {
+    const priceFiltered = filterProductsByPrice(rawProducts, priceFilter);
+    return sortProducts(priceFiltered, sortOption);
+  }, [rawProducts, priceFilter, sortOption]);
+
+  // Pagination calculations
+  const totalItems = filteredAndSortedProducts.length;
+  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [priceFilter, sortOption, rawProducts]);
+
+  // Get current page items
+  const paginatedProducts = useMemo(() => {
+    const startIndex = currentPage * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    return filteredAndSortedProducts.slice(startIndex, endIndex);
+  }, [filteredAndSortedProducts, currentPage]);
+
+  const handlePageChange = useCallback(
+    (page) => {
+      if (page < 0 || page >= totalPages) return;
+      setCurrentPage(page);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    },
+    [totalPages]
   );
+
+  // Generate pagination items with ellipsis
+  const paginationItems = useMemo(() => {
+    const items = [];
+    const maxVisiblePages = 5;
+
+    if (totalPages <= maxVisiblePages) {
+      // Show all pages
+      for (let i = 0; i < totalPages; i++) {
+        items.push({ type: "page", value: i });
+      }
+    } else {
+      // Always show first page
+      items.push({ type: "page", value: 0 });
+
+      if (currentPage > 2) {
+        items.push({ type: "ellipsis", value: "start" });
+      }
+
+      // Show pages around current page
+      const start = Math.max(1, currentPage - 1);
+      const end = Math.min(totalPages - 2, currentPage + 1);
+
+      for (let i = start; i <= end; i++) {
+        items.push({ type: "page", value: i });
+      }
+
+      if (currentPage < totalPages - 3) {
+        items.push({ type: "ellipsis", value: "end" });
+      }
+
+      // Always show last page
+      items.push({ type: "page", value: totalPages - 1 });
+    }
+
+    return items;
+  }, [totalPages, currentPage]);
+
   const featuredProducts = useMemo(
-    () => filteredProducts.slice(0, 5),
-    [filteredProducts]
+    () => filteredAndSortedProducts.slice(0, 5),
+    [filteredAndSortedProducts]
   );
-  const productCount = filteredProducts.length;
+  const productCount = filteredAndSortedProducts.length;
   const isPriceFiltering = Boolean(priceFilter);
   const desiredMinLabel = formatPriceValue(
     priceInputs.min === "" ? 0 : Number(priceInputs.min)
@@ -494,55 +617,86 @@ function Store() {
                 {loading && (
                   <p className="product-grid-status">Đang tải sản phẩm...</p>
                 )}
-                {!loading && filteredProducts.length === 0 && (
+                {!loading && filteredAndSortedProducts.length === 0 && (
                   <p className="product-grid-status">{emptyStateMessage}</p>
                 )}
                 <div className="product-grid">
-                  {filteredProducts.map((product) => (
+                  {paginatedProducts.map((product) => (
                     <ProductCard key={product.id} product={product} />
                   ))}
                 </div>
               </>
             )}
 
-            {/* Pagination giả lập */}
-            {!loading && !error && filteredProducts.length > 0 && (
+            {/* Pagination */}
+            {!loading && !error && totalPages > 1 && (
               <div className="d-flex justify-content-center mt-5">
                 <nav>
                   <ul className="pagination">
-                    <li className="page-item disabled">
-                      <a className="page-link" href="#">
+                    <li
+                      className={`page-item ${
+                        currentPage === 0 ? "disabled" : ""
+                      }`}
+                    >
+                      <button
+                        type="button"
+                        className="page-link"
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 0}
+                      >
                         Trước
-                      </a>
+                      </button>
                     </li>
-                    <li className="page-item active">
-                      <a className="page-link" href="#">
-                        1
-                      </a>
-                    </li>
-                    <li className="page-item">
-                      <a className="page-link" href="#">
-                        2
-                      </a>
-                    </li>
-                    <li className="page-item">
-                      <a className="page-link" href="#">
-                        3
-                      </a>
-                    </li>
-                    <li className="page-item">
-                      <a className="page-link" href="#">
-                        ...
-                      </a>
-                    </li>
-                    <li className="page-item">
-                      <a className="page-link" href="#">
+                    {paginationItems.map((item, index) =>
+                      item.type === "ellipsis" ? (
+                        <li
+                          key={`ellipsis-${item.value}`}
+                          className="page-item disabled"
+                        >
+                          <span className="page-link">...</span>
+                        </li>
+                      ) : (
+                        <li
+                          key={item.value}
+                          className={`page-item ${
+                            currentPage === item.value ? "active" : ""
+                          }`}
+                        >
+                          <button
+                            type="button"
+                            className="page-link"
+                            onClick={() => handlePageChange(item.value)}
+                          >
+                            {item.value + 1}
+                          </button>
+                        </li>
+                      )
+                    )}
+                    <li
+                      className={`page-item ${
+                        currentPage >= totalPages - 1 ? "disabled" : ""
+                      }`}
+                    >
+                      <button
+                        type="button"
+                        className="page-link"
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage >= totalPages - 1}
+                      >
                         Sau
-                      </a>
+                      </button>
                     </li>
                   </ul>
                 </nav>
               </div>
+            )}
+
+            {/* Page info */}
+            {!loading && !error && totalPages > 1 && (
+              <p className="text-center text-muted small mt-2">
+                Trang {currentPage + 1} / {totalPages} (Tổng {productCount} sản
+                phẩm)
+              </p>
             )}
           </Col>
         </Row>

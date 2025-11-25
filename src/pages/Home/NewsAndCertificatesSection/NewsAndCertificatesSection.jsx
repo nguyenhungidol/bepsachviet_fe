@@ -1,18 +1,25 @@
+import { useCallback, useEffect, useState } from "react";
 import { Container, Row, Col } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import { fetchPosts } from "../../../services/postService";
 import "./NewsAndCertificatesSection.css"; // Đảm bảo tạo file CSS này
 
-// Component con giả lập cho một thẻ Tin tức
-const NewsCard = ({ imageSrc, title, description, link }) => (
+// Component con cho một thẻ Tin tức
+const NewsCard = ({ post }) => (
   <div className="news-card">
     <div className="news-image-container">
-      <img src={imageSrc} alt={title} className="news-image" />
+      <Link to={`/tin-tuc/${post.slug}`}>
+        <img src={post.thumbnailUrl} alt={post.title} className="news-image" />
+      </Link>
     </div>
     <div className="news-content p-3">
-      <h4 className="news-title">{title}</h4>
-      <p className="news-description">{description}</p>
-      <a href={link} className="btn-readmore">
+      <h4 className="news-title">
+        <Link to={`/tin-tuc/${post.slug}`}>{post.title}</Link>
+      </h4>
+      <p className="news-description">{post.shortDescription}</p>
+      <Link to={`/tin-tuc/${post.slug}`} className="btn-readmore">
         Chi tiết
-      </a>
+      </Link>
     </div>
   </div>
 );
@@ -27,6 +34,25 @@ const CertificateLogo = ({ imageSrc, altText }) => (
 );
 
 function NewsAndCertificatesSection() {
+  const [latestPosts, setLatestPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const loadLatestPosts = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await fetchPosts({ page: 0, size: 3 });
+      setLatestPosts(data.content || []);
+    } catch (error) {
+      console.error("Failed to load latest posts", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadLatestPosts();
+  }, [loadLatestPosts]);
+
   return (
     <div className="news-and-certificates-section mt-5">
       <Container>
@@ -39,35 +65,21 @@ function NewsAndCertificatesSection() {
         </div>
 
         <Row className="g-4 news-grid mb-5">
-          {/* Bài 1: Gà ủ muối */}
-          <Col xs={12} md={4}>
-            <NewsCard
-              imageSrc="/Thiet-ke-chua-co-ten-1400x788.jpg"
-              title="Tại Sao Nên Mua Gà Ủ Muối Tại Bếp Sạch Việt?"
-              description="Trong những năm gần đây, gà ủ muối trở thành món ăn được nhiều người yêu thích nhờ..."
-              link="/tin-tuc/ga-u-muoi"
-            />
-          </Col>
-
-          {/* Bài 2: Chả vịt */}
-          <Col xs={12} md={4}>
-            <NewsCard
-              imageSrc="/koreacandyyogurtkoreacandyyogurt-1-768x543.png"
-              title="5 lý do tại sao Bạn Nên Chọn Mua Chả Vịt Từ Bếp Sạch Việt?"
-              description="Trong vô vàn lựa chọn thực phẩm mỗi ngày, điều mà ai cũng mong muốn chính là bữa ăn vừa ngon..."
-              link="/tin-tuc/cha-vit"
-            />
-          </Col>
-
-          {/* Bài 3: Hạt và trái cây sấy */}
-          <Col xs={12} md={4}>
-            <NewsCard
-              imageSrc="/ga-u-muoi-bep-sach-viet-768x576.webp"
-              title="Ăn Uống Lành Mạnh Với Hạt Và Trái Cây Sấy – Bí Quyết Dinh Dưỡng Từ Bếp Sạch Việt"
-              description="Các loại hạt và trái cây sấy khô không chỉ là món ăn vặt thơm ngon mà còn mang đến nguồn..."
-              link="/tin-tuc/hat-trai-cay-say"
-            />
-          </Col>
+          {loading && (
+            <Col xs={12} className="text-center">
+              <p>Đang tải tin tức...</p>
+            </Col>
+          )}
+          {!loading && latestPosts.length === 0 && (
+            <Col xs={12} className="text-center">
+              <p className="text-muted">Chưa có bài viết nào.</p>
+            </Col>
+          )}
+          {latestPosts.map((post) => (
+            <Col xs={12} md={4} key={post.id}>
+              <NewsCard post={post} />
+            </Col>
+          ))}
         </Row>
       </Container>
 

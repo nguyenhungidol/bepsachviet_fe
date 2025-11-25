@@ -1,8 +1,13 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home/Home";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
+import Home from "./pages/Home/Home";
 import "./App.css";
 import News from "./pages/News/News";
+import NewsDetail from "./pages/News/NewsDetail";
+import Search from "./pages/Search/Search";
+import ProductDetail from "./pages/Product/ProductDetail";
 import Introduce from "./pages/Introduce/Introduce";
 import Contact from "./pages/Contact/Contact";
 import RecruitAgents from "./pages/RecruitAgents/RecruitAgents";
@@ -17,20 +22,36 @@ import AdminLayout from "./pages/Admin/AdminLayout";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 import AdminCategories from "./pages/Admin/AdminCategories";
 import AdminProducts from "./pages/Admin/AdminProducts";
+import AdminPosts from "./pages/Admin/AdminPosts";
 import AdminUsers from "./pages/Admin/AdminUsers";
 
 function App() {
   return (
     <Router>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
       <AuthProvider>
         <Routes>
           <Route element={<PublicLayout />}>
             <Route path="/" element={<Home />} />
+            <Route path="/tim-kiem" element={<Search />} />
             <Route path="/tin-tuc" element={<News />} />
+            <Route path="/tin-tuc/:slug" element={<NewsDetail />} />
             <Route path="/gioi-thieu" element={<Introduce />} />
             <Route path="/lien-he" element={<Contact />} />
             <Route path="/tuyen-dai-ly" element={<RecruitAgents />} />
             <Route path="/san-pham" element={<Product />} />
+            <Route path="/san-pham/:productId" element={<ProductDetail />} />
             <Route path="/dang-nhap" element={<Login />} />
             <Route path="/dang-ky" element={<Register />} />
             <Route path="/tai-khoan" element={<TaiKhoan />} />
@@ -47,6 +68,7 @@ function App() {
             <Route index element={<AdminDashboard />} />
             <Route path="categories" element={<AdminCategories />} />
             <Route path="products" element={<AdminProducts />} />
+            <Route path="posts" element={<AdminPosts />} />
             <Route path="users" element={<AdminUsers />} />
           </Route>
         </Routes>

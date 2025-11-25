@@ -1,59 +1,141 @@
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Container, Row, Col } from "react-bootstrap";
+import { Link, NavLink, useSearchParams } from "react-router-dom";
+import { toast } from "react-toastify";
+
 import "./News.css";
 import Sidebar from "../Home/Sidebar/Sidebar";
 import { fetchProducts } from "../../services/productService";
 import LikeProduct from "../../components/LikeProduct/LikeProduct";
+import { fetchFeaturedPosts, fetchPosts } from "../../services/postService";
 
-import { Container, Row, Col } from "react-bootstrap";
-import { NavLink } from "react-router-dom";
-import { useEffect, useState } from "react";
-
-// Component con: Thẻ Bài viết nhỏ (Dùng cho Tin nổi bật)
-const FeaturedNewsItem = ({ imageSrc, title, link }) => (
-  <a
-    href={link}
+const FeaturedNewsItem = ({ post }) => (
+  <Link
+    to={`/tin-tuc/${post.slug}`}
     className="featured-news-item d-flex align-items-center mb-3 text-decoration-none"
   >
-    <img src={imageSrc} alt={title} className="featured-news-img me-3" />
-    <p className="featured-news-title mb-0">{title}</p>
-  </a>
+    <img
+      src={post.thumbnailUrl}
+      alt={post.title}
+      className="featured-news-img me-3"
+    />
+    <p className="featured-news-title mb-0">{post.title}</p>
+  </Link>
 );
 
-// Component con: Thẻ Bài viết lớn (Dùng cho Danh sách chính)
-const ArticleCard = ({ imageSrc, title, excerpt, link }) => (
+const ArticleCard = ({ post }) => (
   <div className="article-card d-flex mb-4 p-3 border rounded shadow-sm">
     <img
-      src={imageSrc}
-      alt={title}
+      src={post.thumbnailUrl}
+      alt={post.title}
       className="article-img me-4 flex-shrink-0"
     />
     <div className="article-content">
-      <h3 className="article-title">{title}</h3>
-      <p className="article-excerpt">{excerpt}</p>
-      <a href={link} className="btn-read-more">
+      <h3 className="article-title">
+        <Link to={`/tin-tuc/${post.slug}`}>{post.title}</Link>
+      </h3>
+      <p className="article-meta text-muted">
+        {post.author} •{" "}
+        {post.createdAt
+          ? new Date(post.createdAt).toLocaleDateString("vi-VN")
+          : ""}
+      </p>
+      <p className="article-excerpt">{post.shortDescription}</p>
+      <Link to={`/tin-tuc/${post.slug}`} className="btn-read-more">
         Đọc tiếp...
-      </a>
+      </Link>
     </div>
   </div>
 );
 
 function News() {
+  const [searchParams] = useSearchParams();
+  const searchTerm = (searchParams.get("search") || "").trim();
+
   const [suggestedProducts, setSuggestedProducts] = useState([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
-  useEffect(() => {
-    const loadSuggestedProducts = async () => {
-      try {
-        const data = await fetchProducts(); // Lấy tất cả sản phẩm
-        // Lấy ngẫu nhiên hoặc lấy 5 sản phẩm đầu tiên
-        const topProducts = data.slice(0, 5);
-        setSuggestedProducts(topProducts);
-      } catch (error) {
-        console.error("Lỗi tải sản phẩm gợi ý bên trang tin tức:", error);
-      } finally {
-        setLoadingProducts(false);
-      }
-    };
-    loadSuggestedProducts();
+
+  const [featuredPosts, setFeaturedPosts] = useState([]);
+  const [loadingFeatured, setLoadingFeatured] = useState(true);
+
+  const [postsPage, setPostsPage] = useState({
+    content: [],
+    totalPages: 0,
+    totalElements: 0,
+    number: 0,
+  });
+  const [page, setPage] = useState(0);
+  const pageSize = 6;
+  const [loadingPosts, setLoadingPosts] = useState(true);
+
+  const loadSuggestedProducts = useCallback(async () => {
+    try {
+      const data = await fetchProducts();
+      setSuggestedProducts(data.slice(0, 5));
+    } catch (error) {
+      console.error("Lỗi tải sản phẩm gợi ý bên trang tin tức:", error);
+    } finally {
+      setLoadingProducts(false);
+    }
   }, []);
+
+  const loadPosts = useCallback(async () => {
+    setLoadingPosts(true);
+    try {
+      const data = await fetchPosts({
+        page,
+        size: pageSize,
+        search: searchTerm || undefined,
+      });
+      setPostsPage(data);
+    } catch (error) {
+      console.error("Failed to load posts", error);
+      toast.error(error.message || "Không thể tải danh sách bài viết.");
+    } finally {
+      setLoadingPosts(false);
+    }
+  }, [page, searchTerm]);
+
+  const loadFeatured = useCallback(async () => {
+    setLoadingFeatured(true);
+    try {
+      const data = await fetchFeaturedPosts({ limit: 5 });
+      setFeaturedPosts(data);
+    } catch (error) {
+      console.error("Failed to load featured posts", error);
+    } finally {
+      setLoadingFeatured(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadSuggestedProducts();
+  }, [loadSuggestedProducts]);
+
+  useEffect(() => {
+    loadPosts();
+  }, [loadPosts]);
+
+  // Reset page when search term changes
+  useEffect(() => {
+    setPage(0);
+  }, [searchTerm]);
+
+  useEffect(() => {
+    loadFeatured();
+  }, [loadFeatured]);
+
+  const totalPages = Math.max(postsPage.totalPages || 1, 1);
+
+  const handlePageChange = (nextPage) => {
+    if (nextPage < 0 || nextPage >= totalPages || nextPage === page) return;
+    setPage(nextPage);
+  };
+
+  const paginationItems = useMemo(() => {
+    return Array.from({ length: totalPages }, (_, index) => index);
+  }, [totalPages]);
+
   return (
     <div className="news-page bg-light">
       <div className="page-header-top bg-gray-100 py-3 mb-4">
@@ -62,53 +144,47 @@ function News() {
             <NavLink to="/" className="text-muted text-decoration-none">
               Trang chủ&nbsp;
             </NavLink>{" "}
-            /&nbsp; <span className="fw-bold">Tin tức</span>
+            /&nbsp;{" "}
+            {searchTerm ? (
+              <>
+                <NavLink
+                  to="/tin-tuc"
+                  className="text-muted text-decoration-none"
+                >
+                  Tin tức
+                </NavLink>
+                <span>&nbsp;/&nbsp;</span>
+                <span className="fw-bold">
+                  Kết quả tìm kiếm cho "{searchTerm}"
+                </span>
+              </>
+            ) : (
+              <span className="fw-bold">Tin tức</span>
+            )}
           </div>
         </Container>
       </div>
 
       <Container className="main-content-area pb-5">
         <Row className="g-4 align-items-start">
-          {/* Cột 1: SIDEBAR (lg=3) */}
           <Col xs={12} lg={3}>
             <Sidebar />
 
-            {/* 2. TIN NỔI BẬT */}
             <div className="sidebar-section mb-4 bg-white shadow-sm rounded mt-4">
               <h4 className="sidebar-heading bg-success text-white p-3 rounded-top">
                 TIN NỔI BẬT
               </h4>
               <div className="p-3">
-                <FeaturedNewsItem
-                  imageSrc="/path/to/ga-u-muoi-thumb.png"
-                  title="Tại Sao Nên Mua Gà Ủ Muối Tại Bếp Sạch Việt?"
-                  link="/tin-tuc/ga-u-muoi"
-                />
-                <FeaturedNewsItem
-                  imageSrc="/path/to/cha-vit-thumb.png"
-                  title="5 lý do tại sao Nên Chọn Mua Chả Vịt Từ Bếp Sạch Việt"
-                  link="/tin-tuc/cha-vit"
-                />
-                <FeaturedNewsItem
-                  imageSrc="/path/to/hat-say-thumb.png"
-                  title="Ăn Uống Lành Mạnh Với Hạt Và Trái Cây Sấy – Bí Quyết Dinh Dưỡng Từ Bếp Sạch Việt"
-                  link="/tin-tuc/hat-say"
-                />
-                {/* Thêm các bài viết nổi bật khác */}
-                <FeaturedNewsItem
-                  imageSrc="/path/to/hanh-trinh-thumb.png"
-                  title="Hành trình gìn giữ hương vị Việt cùng Bếp sạch Việt"
-                  link="/tin-tuc/hanh-trinh-viet"
-                />
-                <FeaturedNewsItem
-                  imageSrc="/path/to/cha-vit-vang-thumb.png"
-                  title="“Chả vịt Thúy Mạnh” được tôn vinh Thương hiệu Vàng nông nghiệp Việt Nam 2023"
-                  link="/tin-tuc/thuong-hieu-vang"
-                />
+                {loadingFeatured && <p>Đang tải...</p>}
+                {!loadingFeatured && featuredPosts.length === 0 && (
+                  <p className="text-muted">Chưa có bài viết nổi bật.</p>
+                )}
+                {featuredPosts.map((post) => (
+                  <FeaturedNewsItem key={post.id} post={post} />
+                ))}
               </div>
             </div>
 
-            {/* 3. CÓ THỂ BẠN SẼ THÍCH (Sản phẩm liên quan) */}
             <div className="sidebar-section mb-4 bg-white shadow-sm rounded">
               <LikeProduct
                 featuredProducts={suggestedProducts}
@@ -117,115 +193,55 @@ function News() {
             </div>
           </Col>
 
-          {/* Cột 2: NỘI DUNG CHÍNH (lg=9) */}
           <Col xs={12} lg={9}>
-            {/* Danh sách Bài viết chính */}
             <div className="article-list">
-              <ArticleCard
-                imageSrc="/Thiet-ke-chua-co-ten-1400x788.jpg"
-                title="Tại Sao Nên Mua Gà Ủ Muối Tại Bếp Sạch Việt?"
-                excerpt="Trong những năm gần đây, gà ủ muối trở thành món ăn được nhiều người yêu thích nhờ hương vị đậm đà, thịt gà chắc ngọt, cùng..."
-                link="/tin-tuc/ga-u-muoi"
-              />
-
-              <ArticleCard
-                imageSrc="/koreacandyyogurtkoreacandyyogurt-1-768x543.png"
-                title="5 lý do tại sao Bạn Nên Chọn Mua Chả Vịt Từ Bếp Sạch Việt?"
-                excerpt="Trong vô vàn lựa chọn thực phẩm mỗi ngày, điều mà ai cũng mong muốn chính là bữa ăn vừa ngon miệng, vừa an toàn và giàu dinh dưỡng. Đó..."
-                link="/tin-tuc/cha-vit"
-              />
-
-              <ArticleCard
-                imageSrc="/ga-u-muoi-bep-sach-viet-768x576.webp"
-                title="Hành trình gìn giữ hương vị Việt cùng Bếp sạch Việt"
-                excerpt="Ẩm thực Việt Nam từ đâu đã được, ví như bản giao hưởng của sắc màu và hương vị. Từ bữa cơm quê mộc mạc đến những món ăn cung..."
-                link="/tin-tuc/hanh-trinh-viet"
-              />
-
-              <ArticleCard
-                imageSrc="/361666794_208304555541423_6132981553900818908_n-768x602.jpg"
-                title="Festival nông sản Hà nội lần 2 tại Ứng Hòa"
-                excerpt="Chiều tối 19/07/2023, Festival nông sản Hà nội lần 2 tại Ứng hòa chính thức khai mạc. Gian hàng của Thúy Mạnh Food vinh dự được bộ trưởng bộ NN&PTNT..."
-                link="/tin-tuc/festival-nong-san"
-              />
-
-              <ArticleCard
-                imageSrc="/CV_small02.png"
-                title="Món mới: Chả chân vịt Thúy Mạnh"
-                excerpt="MÓN MỚI! MÓN MỚI!! Chân vịt và các bộ phận khác của vịt đều là món ăn ngon khoái khẩu của nhiều người. Nếu chân vịt được chế biến..."
-                link="/tin-tuc/cha-chan-vit"
-              />
-
-              <ArticleCard
-                imageSrc="/MOCVIT_small02.png"
-                title="Mộc vịt – một đặc sản của Vân Đình chưa nhiều người biết đến"
-                excerpt="Bếp sạch Việt mới ra mắt mộc vịt Vân Đình – Một đặc sản khác của Vân Đình ít người biết đến. Mộc vịt có thể dùng để nấu với canh..."
-                link="/tin-tuc/moc-vit"
-              />
-
-              <ArticleCard
-                imageSrc="/Chavit_small2.jpg"
-                title="Vịt cỏ Vân Đình"
-                excerpt="Vịt cỏ Vân Đình là giống vịt cỏ bản địa được chăn thả theo hình thức truyền thống trên các đồng chiêm của huyện Ứng Hòa, Vân Đình, Hà Nội..."
-                link="/tin-tuc/vit-co-van-dinh"
-              />
-
-              <ArticleCard
-                imageSrc="/chavit_small1-510x734.jpg"
-                title="Món đặc sản: “Chả vịt Vân Đình"
-                excerpt="Vân Đình nổi tiếng với món đặc sản “Vịt cỏ Vân Đình”. Vịt Vân Đình có đặc điểm là nhỏ con, lông cánh dài, màu cà kêm, thớ thịt dày,..."
-                link="/tin-tuc/cha-vit-van-dinh"
-              />
-
-              <ArticleCard
-                imageSrc="/Mallard-Duck-20-1333x800.jpg"
-                title="Thịt vịt có lợi gì cho sức khỏe?"
-                excerpt="Vịt là loại gia cầm được dùng làm thực phẩm phổ biến thứ ba trên thế giới. Đây được xem là một loại thực phẩm lành mạnh, rất giàu protein,..."
-                link="/tin-tuc/thit-vit-suc-khoe"
-              />
-
-              <ArticleCard
-                imageSrc="/342708144_2508506579297182_5393621281078776419_n-510x510.jpg"
-                title="Thực phẩm sạch “Đặc sản chả vịt Vân Đình”"
-                excerpt="Thực phẩm sạch “Đặc sản chả vịt Vân Đình”-  vinh dự được lựa chọn tham gia trưng bày tại hội nghị Sơ Kết chương trình 04 – CTR/TU,..."
-                link="/tin-tuc/thuc-pham-suc-khoe"
-              />
+              {loadingPosts && <p>Đang tải bài viết...</p>}
+              {!loadingPosts && postsPage.content.length === 0 && (
+                <p>Chưa có bài viết nào.</p>
+              )}
+              {postsPage.content.map((post) => (
+                <ArticleCard key={post.id} post={post} />
+              ))}
             </div>
 
-            {/* Pagination (Giả lập) */}
             <div className="d-flex justify-content-center mt-5">
-              {/* Dùng các lớp Bootstrap cho phân trang */}
               <nav>
                 <ul className="pagination">
-                  <li className="page-item disabled">
-                    <a className="page-link" href="#">
+                  <li className={`page-item ${page === 0 ? "disabled" : ""}`}>
+                    <button
+                      className="page-link"
+                      type="button"
+                      onClick={() => handlePageChange(page - 1)}
+                    >
                       Trước
-                    </a>
+                    </button>
                   </li>
-                  <li className="page-item active">
-                    <a className="page-link" href="#">
-                      1
-                    </a>
-                  </li>
-                  <li className="page-item">
-                    <a className="page-link" href="#">
-                      2
-                    </a>
-                  </li>
-                  <li className="page-item">
-                    <a className="page-link" href="#">
-                      3
-                    </a>
-                  </li>
-                  <li className="page-item">
-                    <a className="page-link" href="#">
-                      ...
-                    </a>
-                  </li>
-                  <li className="page-item">
-                    <a className="page-link" href="#">
+                  {paginationItems.map((index) => (
+                    <li
+                      key={index}
+                      className={`page-item ${page === index ? "active" : ""}`}
+                    >
+                      <button
+                        type="button"
+                        className="page-link"
+                        onClick={() => handlePageChange(index)}
+                      >
+                        {index + 1}
+                      </button>
+                    </li>
+                  ))}
+                  <li
+                    className={`page-item ${
+                      page >= totalPages - 1 ? "disabled" : ""
+                    }`}
+                  >
+                    <button
+                      className="page-link"
+                      type="button"
+                      onClick={() => handlePageChange(page + 1)}
+                    >
                       Sau
-                    </a>
+                    </button>
                   </li>
                 </ul>
               </nav>

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import "./ProductCard.css";
 
 const FALLBACK_IMAGE = "https://via.placeholder.com/300x300?text=No+Image";
@@ -29,29 +30,38 @@ const ProductCard = ({ product, imageSrc, name, price, ocUrl }) => {
   const ocopImage =
     ocUrl || resolvedProduct.ocUrl || resolvedProduct.ocopImageUrl || null;
 
+  const productLink = `/san-pham/${
+    resolvedProduct.productId || resolvedProduct.id || "unknown"
+  }`;
+
   return (
-    <div className="product-card">
-      <div className="product-image-container">
-        <img
-          src={displayImage}
-          alt={displayName}
-          className="product-image"
-          loading="lazy"
-          decoding="async"
-          onError={handleImageError}
-          referrerPolicy="no-referrer"
-        />
+    <Link to={productLink} className="product-card-link">
+      <div className="product-card">
+        <div className="product-image-container">
+          <img
+            src={displayImage}
+            alt={displayName}
+            className="product-image"
+            loading="lazy"
+            decoding="async"
+            onError={handleImageError}
+            referrerPolicy="no-referrer"
+          />
+        </div>
+        <div className="product-info">
+          <p className="product-name">{displayName}</p>
+          {ocopImage && (
+            <div className="product-rating">
+              <img src={ocopImage} alt="OCOP Rating" className="rating-image" />
+            </div>
+          )}
+          <p className="product-price">
+            <span className="price-label">Giá bán:</span>{" "}
+            <span className="price-number">{priceLabel}</span>
+          </p>
+        </div>
       </div>
-      <div className="product-info">
-        <p className="product-name">{displayName}</p>
-        {ocopImage && (
-          <div className="product-rating">
-            <img src={ocopImage} alt="OCOP Rating" className="rating-image" />
-          </div>
-        )}
-        <p className="product-price">GIÁ BÁN: {priceLabel}</p>
-      </div>
-    </div>
+    </Link>
   );
 };
 

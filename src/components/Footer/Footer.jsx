@@ -1,5 +1,5 @@
 import { Container, Row, Col } from "react-bootstrap";
-import "./Footer.css"; // Đảm bảo tạo file CSS này
+import "./Footer.css";
 import { useState, useEffect } from "react";
 import FanpageBox from "./FanpageBox";
 
@@ -139,28 +139,6 @@ function Footer() {
             <p className="copyright-text">
               Copyright 2025 © Giao diện Bếp sạch Việt
             </p>
-            {/* <Col md={6} xs={12} className="text-md-end text-center">
-              {/* <ul className="copyright-links list-unstyled d-flex justify-content-center justify-content-md-end">
-                <li>
-                  <a href="/">TRANG CHỦ</a>
-                </li>
-                <li>
-                  <a href="/san-pham">SẢN PHẨM</a>
-                </li>
-                <li>
-                  <a href="/tin-tuc">TIN TỨC</a>
-                </li>
-                <li>
-                  <a href="/gioi-thieu">GIỚI THIỆU</a>
-                </li>
-                <li>
-                  <a href="/tuyen-dai-ly">TUYỂN ĐẠI LÝ</a>
-                </li>
-                <li>
-                  <a href="/lien-he">LIÊN HỆ</a>
-                </li>
-              </ul> */}
-            {/* </Col> */}
           </Row>
         </Container>
       </div>
