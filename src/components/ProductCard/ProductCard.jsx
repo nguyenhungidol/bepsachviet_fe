@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { useCart } from "../../context/CartContext";
 import "./ProductCard.css";
 
 const FALLBACK_IMAGE = "https://via.placeholder.com/300x300?text=No+Image";
 
 const ProductCard = ({ product, imageSrc, name, price, ocUrl }) => {
+  const { addItem } = useCart();
   const resolvedProduct = product || {};
   const preferredImage = useMemo(() => {
     return (
@@ -29,10 +31,17 @@ const ProductCard = ({ product, imageSrc, name, price, ocUrl }) => {
   const priceLabel = price || resolvedProduct.priceLabel || "LIÊN HỆ";
   const ocopImage =
     ocUrl || resolvedProduct.ocUrl || resolvedProduct.ocopImageUrl || null;
+  const rawPrice = resolvedProduct.price;
 
   const productLink = `/san-pham/${
     resolvedProduct.productId || resolvedProduct.id || "unknown"
   }`;
+
+  const handleAddToCart = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addItem(resolvedProduct, 1);
+  };
 
   return (
     <Link to={productLink} className="product-card-link">
@@ -47,6 +56,17 @@ const ProductCard = ({ product, imageSrc, name, price, ocUrl }) => {
             onError={handleImageError}
             referrerPolicy="no-referrer"
           />
+          {/* Add to cart button overlay */}
+          {rawPrice > 0 && (
+            <button
+              type="button"
+              className="btn-quick-add"
+              onClick={handleAddToCart}
+              title="Thêm vào giỏ hàng"
+            >
+              <i className="bi bi-cart-plus"></i>
+            </button>
+          )}
         </div>
         <div className="product-info">
           <p className="product-name">{displayName}</p>

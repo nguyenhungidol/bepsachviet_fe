@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { Link, NavLink, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 
 import "./NewsDetail.css";
 import Sidebar from "../Home/Sidebar/Sidebar";

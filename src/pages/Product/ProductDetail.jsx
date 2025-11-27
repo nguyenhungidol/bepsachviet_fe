@@ -7,6 +7,7 @@ import "./ProductDetail.css";
 import Sidebar from "../Home/Sidebar/Sidebar";
 import LikeProduct from "../../components/LikeProduct/LikeProduct";
 import ProductCard from "../../components/ProductCard/ProductCard";
+import { useCart } from "../../context/CartContext";
 import {
   fetchProductById,
   fetchProducts,
@@ -123,6 +124,7 @@ const QuantitySelector = ({ quantity, onChange }) => {
 // --- MAIN COMPONENT ---
 function ProductDetail() {
   const { productId } = useParams();
+  const { addItem } = useCart();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
@@ -227,7 +229,9 @@ function ProductDetail() {
   };
 
   const handleAddToCart = () => {
-    toast.success(`Đã thêm ${quantity} sản phẩm vào giỏ hàng!`);
+    if (product) {
+      addItem(product, quantity);
+    }
   };
 
   const productImages = product

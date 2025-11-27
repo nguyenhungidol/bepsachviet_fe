@@ -15,18 +15,29 @@ function TopBar() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const syncUserInfo = () => {
+  // Only sync user info without affecting menu state
+  const syncUserInfo = (closeMenu = false) => {
     setUserInfo(getStoredUser());
-    setMenuOpen(false);
+    if (closeMenu) {
+      setMenuOpen(false);
+    }
   };
 
+  // Close menu on route change
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
+
+  // Initial load - get user info
   useEffect(() => {
     syncUserInfo();
-  }, [location]);
+  }, []);
 
   useEffect(() => {
-    const handleStorage = () => syncUserInfo();
-    const handleAuthEvent = () => syncUserInfo();
+    const handleStorage = () => syncUserInfo(true);
+    // Don't close menu on auth event - just refresh user info
+    // Menu will close on route change or click outside
+    const handleAuthEvent = () => syncUserInfo(false);
 
     window.addEventListener("storage", handleStorage);
     window.addEventListener(AUTH_STATE_EVENT, handleAuthEvent);
@@ -39,14 +50,16 @@ function TopBar() {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
+      if (
+        menuOpen &&
+        menuRef.current &&
+        !menuRef.current.contains(event.target)
+      ) {
         setMenuOpen(false);
       }
     };
 
-    if (menuOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
+    document.addEventListener("mousedown", handleClickOutside);
 
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [menuOpen]);
@@ -56,6 +69,12 @@ function TopBar() {
     setUserInfo(null);
     setMenuOpen(false);
     navigate("/dang-nhap");
+  };
+
+  const handleToggleMenu = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setMenuOpen((prev) => !prev);
   };
 
   const displayName = userInfo?.name || userInfo?.email;
@@ -85,7 +104,7 @@ function TopBar() {
               <button
                 type="button"
                 className="user-toggle"
-                onClick={() => setMenuOpen((prev) => !prev)}
+                onClick={handleToggleMenu}
               >
                 <i className="bi bi-person-circle"></i>
                 <span className="user-name">{displayName || "Tài khoản"}</span>

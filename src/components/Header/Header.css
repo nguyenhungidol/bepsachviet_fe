@@ -53,6 +53,43 @@
   transform: translateY(-2px);
 }
 
+.cart-badge {
+  top: -8px;
+  right: -8px;
+  font-size: 11px;
+  min-width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(220, 53, 69, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+  }
+}
+
+/* Cart Offcanvas Styles */
+.cart-items {
+  max-height: calc(100vh - 280px);
+}
+
+.cart-item-image img {
+  border: 1px solid #eee;
+}
+
+.cart-item:last-child {
+  border-bottom: none !important;
+}
+
 @media (max-width: 768px) {
   .logo-circle {
     width: 50px;

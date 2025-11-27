@@ -260,7 +260,7 @@ const Login = () => {
                     onChange={(e) => setRememberMe(e.target.checked)}
                     className="remember-me"
                   />
-                  <Link to="#" className="forgot-password-link">
+                  <Link to="/quen-mat-khau" className="forgot-password-link">
                     Quên mật khẩu?
                   </Link>
                 </div>

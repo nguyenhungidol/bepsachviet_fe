@@ -14,9 +14,12 @@ import RecruitAgents from "./pages/RecruitAgents/RecruitAgents";
 import Product from "./pages/Product/Product";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
+import ForgotPassword from "./pages/ForgotPassword/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword/ResetPassword";
 import TaiKhoan from "./pages/TaiKhoan/TaiKhoan";
 import PublicLayout from "./layouts/PublicLayout";
 import { AuthProvider } from "./context/AuthContext";
+import { CartProvider } from "./context/CartContext";
 import RequireAdmin from "./components/Auth/RequireAdmin";
 import AdminLayout from "./pages/Admin/AdminLayout";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
@@ -41,37 +44,42 @@ function App() {
         theme="colored"
       />
       <AuthProvider>
-        <Routes>
-          <Route element={<PublicLayout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/tim-kiem" element={<Search />} />
-            <Route path="/tin-tuc" element={<News />} />
-            <Route path="/tin-tuc/:slug" element={<NewsDetail />} />
-            <Route path="/gioi-thieu" element={<Introduce />} />
-            <Route path="/lien-he" element={<Contact />} />
-            <Route path="/tuyen-dai-ly" element={<RecruitAgents />} />
-            <Route path="/san-pham" element={<Product />} />
-            <Route path="/san-pham/:productId" element={<ProductDetail />} />
-            <Route path="/dang-nhap" element={<Login />} />
-            <Route path="/dang-ky" element={<Register />} />
-            <Route path="/tai-khoan" element={<TaiKhoan />} />
-          </Route>
+        <CartProvider>
+          <Routes>
+            <Route element={<PublicLayout />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/tim-kiem" element={<Search />} />
+              <Route path="/tin-tuc" element={<News />} />
+              <Route path="/tin-tuc/:slug" element={<NewsDetail />} />
+              <Route path="/gioi-thieu" element={<Introduce />} />
+              <Route path="/lien-he" element={<Contact />} />
+              <Route path="/tuyen-dai-ly" element={<RecruitAgents />} />
+              <Route path="/san-pham" element={<Product />} />
+              <Route path="/san-pham/:productId" element={<ProductDetail />} />
+              <Route path="/dang-nhap" element={<Login />} />
+              <Route path="/dang-ky" element={<Register />} />
+              <Route path="/quen-mat-khau" element={<ForgotPassword />} />
+              <Route path="/dat-lai-mat-khau" element={<ResetPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/tai-khoan" element={<TaiKhoan />} />
+            </Route>
 
-          <Route
-            path="/admin"
-            element={
-              <RequireAdmin>
-                <AdminLayout />
-              </RequireAdmin>
-            }
-          >
-            <Route index element={<AdminDashboard />} />
-            <Route path="categories" element={<AdminCategories />} />
-            <Route path="products" element={<AdminProducts />} />
-            <Route path="posts" element={<AdminPosts />} />
-            <Route path="users" element={<AdminUsers />} />
-          </Route>
-        </Routes>
+            <Route
+              path="/admin"
+              element={
+                <RequireAdmin>
+                  <AdminLayout />
+                </RequireAdmin>
+              }
+            >
+              <Route index element={<AdminDashboard />} />
+              <Route path="categories" element={<AdminCategories />} />
+              <Route path="products" element={<AdminProducts />} />
+              <Route path="posts" element={<AdminPosts />} />
+              <Route path="users" element={<AdminUsers />} />
+            </Route>
+          </Routes>
+        </CartProvider>
       </AuthProvider>
     </Router>
   );

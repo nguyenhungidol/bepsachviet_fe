@@ -9,8 +9,21 @@ import {
 import { uploadFile } from "../../services/fileService";
 import { toast } from "react-toastify";
 
-const OCOP_BADGE_URL =
-  "https://bepsachviet-s3-doan.s3.ap-southeast-2.amazonaws.com/c9515ec7-8533-4122-bd00-00fada3b3470.png";
+// OCOP badge URLs by star rating
+const OCOP_BADGES = {
+  3: "https://bepsachviet-s3-doan.s3.ap-southeast-2.amazonaws.com/bcc29f19-0342-464f-9b0a-e3a1453c1e1d.png",
+  4: "https://bepsachviet-s3-doan.s3.ap-southeast-2.amazonaws.com/c9515ec7-8533-4122-bd00-00fada3b3470.png",
+  5: "https://bepsachviet-s3-doan.s3.ap-southeast-2.amazonaws.com/74feba58-d75a-4084-b0c5-fe2c57ff3bcf.jpg",
+};
+
+// Helper to detect OCOP stars from URL
+const getOcopStarsFromUrl = (url) => {
+  if (!url) return "";
+  for (const [stars, badgeUrl] of Object.entries(OCOP_BADGES)) {
+    if (url === badgeUrl) return stars;
+  }
+  return "";
+};
 
 const initialProductForm = {
   name: "",
@@ -18,7 +31,7 @@ const initialProductForm = {
   description: "",
   categoryId: "",
   imageSrc: "",
-  showOcop: false,
+  ocopStars: "", // "", "3", "4", or "5"
 };
 
 const AdminProducts = () => {
@@ -93,7 +106,7 @@ const AdminProducts = () => {
       price: Number.isFinite(parsedPrice) ? parsedPrice : undefined,
       categoryId: form.categoryId || undefined,
       imageSrc: form.imageSrc?.trim() || undefined,
-      ocUrl: form.showOcop ? OCOP_BADGE_URL : undefined,
+      ocUrl: form.ocopStars ? OCOP_BADGES[form.ocopStars] : undefined,
     };
 
     try {
@@ -144,7 +157,7 @@ const AdminProducts = () => {
         product.category?.categoryId ||
         "",
       imageSrc: product.imageSrc || product.imageUrl || product.thumbnail || "",
-      showOcop: Boolean(product.ocUrl),
+      ocopStars: getOcopStarsFromUrl(product.ocUrl),
     });
   };
 
@@ -311,36 +324,31 @@ const AdminProducts = () => {
                   />
                 </div>
                 <div className="mb-3">
-                  <div className="form-check form-switch">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      id="showOcopSwitch"
-                      checked={form.showOcop}
-                      onChange={(event) =>
-                        setForm((prev) => ({
-                          ...prev,
-                          showOcop: event.target.checked,
-                        }))
-                      }
-                    />
-                    <label
-                      className="form-check-label"
-                      htmlFor="showOcopSwitch"
-                    >
-                      Sản phẩm đạt chuẩn OCOP
-                    </label>
-                  </div>
+                  <label className="form-label">Chứng nhận OCOP</label>
+                  <select
+                    className="form-select"
+                    value={form.ocopStars}
+                    onChange={(event) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        ocopStars: event.target.value,
+                      }))
+                    }
+                  >
+                    <option value="">Không có OCOP</option>
+                    <option value="3">OCOP 3 sao ⭐⭐⭐</option>
+                    <option value="4">OCOP 4 sao ⭐⭐⭐⭐</option>
+                    <option value="5">OCOP 5 sao ⭐⭐⭐⭐⭐</option>
+                  </select>
                   <div className="form-text">
-                    Bật nếu sản phẩm đạt tiêu chuẩn OCOP, huy hiệu sẽ hiển thị
-                    trên trang sản phẩm.
+                    Chọn mức sao OCOP nếu sản phẩm đạt chứng nhận.
                   </div>
-                  {form.showOcop && (
+                  {form.ocopStars && (
                     <div className="mt-2">
                       <img
-                        src={OCOP_BADGE_URL}
-                        alt="OCOP Badge Preview"
-                        style={{ maxHeight: 40 }}
+                        src={OCOP_BADGES[form.ocopStars]}
+                        alt={`OCOP ${form.ocopStars} sao`}
+                        style={{ maxHeight: 50 }}
                       />
                     </div>
                   )}

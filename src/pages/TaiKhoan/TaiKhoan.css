@@ -1,6 +1,8 @@
 .account-page {
   min-height: 100vh;
   background-color: #f8f9fa;
+  position: relative;
+  z-index: 1;
 }
 
 .account-container {
@@ -49,6 +51,44 @@
 .info-value.role {
   text-transform: uppercase;
   color: #198754;
+}
+
+/* Password field with toggle */
+.password-field {
+  position: relative;
+}
+
+.password-field .form-control {
+  padding-right: 45px;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.password-toggle-btn:hover {
+  color: #198754;
+}
+
+/* Modal styles */
+.modal-header {
+  border-bottom: 1px solid #e9ecef;
+}
+
+.modal-footer {
+  border-top: 1px solid #e9ecef;
 }
 
 @media (max-width: 576px) {
