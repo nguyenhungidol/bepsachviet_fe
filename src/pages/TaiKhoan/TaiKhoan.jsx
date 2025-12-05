@@ -290,6 +290,13 @@ const TaiKhoan = () => {
                 >
                   Đổi mật khẩu
                 </Button>
+                <Button
+                  variant="outline-primary"
+                  onClick={() => navigate("/don-hang-cua-toi")}
+                >
+                  <i className="bi bi-bag-check me-1"></i>
+                  Đơn hàng của tôi
+                </Button>
               </div>
             </Card.Body>
           </Card>

@@ -233,7 +233,8 @@ function Header() {
                             onClick={() =>
                               updateItem(
                                 item.itemId || item.productId,
-                                item.quantity - 1
+                                item.quantity - 1,
+                                item.stockQuantity
                               )
                             }
                             disabled={item.quantity <= 1}
@@ -252,8 +253,14 @@ function Header() {
                             onClick={() =>
                               updateItem(
                                 item.itemId || item.productId,
-                                item.quantity + 1
+                                item.quantity + 1,
+                                item.stockQuantity
                               )
+                            }
+                            disabled={
+                              item.stockQuantity !== null &&
+                              item.stockQuantity !== undefined &&
+                              item.quantity >= item.stockQuantity
                             }
                           >
                             <i className="bi bi-plus"></i>

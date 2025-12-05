@@ -1,0 +1,159 @@
+.checkout-page {
+  min-height: 100vh;
+}
+
+.checkout-title {
+  color: #198754;
+  font-weight: 700;
+}
+
+.checkout-card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.checkout-card .card-header {
+  border-bottom: 1px solid #e9ecef;
+  padding: 1rem 1.25rem;
+}
+
+.checkout-card .card-header h5 {
+  color: #198754;
+  font-weight: 600;
+}
+
+.checkout-card .card-body {
+  padding: 1.5rem;
+}
+
+/* Payment options */
+.payment-option {
+  padding: 12px 16px;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.payment-option:hover {
+  border-color: #198754;
+  background-color: #f8fff9;
+}
+
+.payment-option .form-check-input:checked + .form-check-label {
+  color: #198754;
+  font-weight: 500;
+}
+
+/* Checkout button */
+.checkout-btn {
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 14px 24px;
+  border-radius: 8px;
+}
+
+/* Order Summary */
+.order-summary-card .card-body {
+  padding: 0;
+}
+
+.order-items {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.order-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+.order-item:last-child {
+  border-bottom: none;
+}
+
+.order-item-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.order-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.order-item-name {
+  font-weight: 500;
+  margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.order-item-price {
+  font-size: 13px;
+  color: #6c757d;
+  margin-bottom: 0;
+}
+
+.order-item-total {
+  font-weight: 600;
+  color: #198754;
+  white-space: nowrap;
+}
+
+/* Order Summary Footer */
+.order-summary-footer {
+  padding: 16px;
+  background-color: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.summary-row.total {
+  margin-bottom: 0;
+  font-size: 1.1rem;
+}
+
+.summary-row.total span:first-child {
+  font-weight: 600;
+}
+
+.total-price {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #dc3545;
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+  .order-summary-card {
+    position: static !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .checkout-title {
+    font-size: 1.5rem;
+  }
+
+  .checkout-card .card-body {
+    padding: 1rem;
+  }
+
+  .order-item-image {
+    width: 50px;
+    height: 50px;
+  }
+}

@@ -1,0 +1,174 @@
+.order-detail-page {
+  min-height: 100vh;
+}
+
+.order-card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.order-card .card-header {
+  border-bottom: 1px solid #e9ecef;
+  padding: 1rem 1.25rem;
+  border-radius: 12px 12px 0 0;
+}
+
+.order-card .card-header h5,
+.order-card .card-header h6 {
+  color: #198754;
+  font-weight: 600;
+}
+
+.status-badge {
+  font-size: 0.85rem;
+  padding: 8px 12px;
+  border-radius: 20px;
+}
+
+/* Order Items */
+.order-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+.order-item:last-child {
+  border-bottom: none;
+}
+
+.order-item-image {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.order-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.order-item-name {
+  font-weight: 500;
+  color: #212529;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.order-item-name:hover {
+  color: #198754;
+}
+
+.order-item-price {
+  font-size: 13px;
+  color: #6c757d;
+}
+
+.order-item-total {
+  font-weight: 600;
+  color: #198754;
+  white-space: nowrap;
+  font-size: 1rem;
+}
+
+/* Order Total Card */
+.order-total-card {
+  background: linear-gradient(135deg, #f8fff9, #ffffff);
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 0.95rem;
+}
+
+.summary-row.total {
+  margin-bottom: 0;
+  font-size: 1.1rem;
+}
+
+.summary-row.total span:first-child {
+  font-weight: 600;
+}
+
+.total-price {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #dc3545;
+}
+
+/* Timeline (for order tracking - optional) */
+.order-timeline {
+  position: relative;
+  padding-left: 30px;
+}
+
+.timeline-item {
+  position: relative;
+  padding-bottom: 20px;
+}
+
+.timeline-item::before {
+  content: "";
+  position: absolute;
+  left: -22px;
+  top: 0;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #e9ecef;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 2px #e9ecef;
+}
+
+.timeline-item.active::before {
+  background: #198754;
+  box-shadow: 0 0 0 2px #198754;
+}
+
+.timeline-item::after {
+  content: "";
+  position: absolute;
+  left: -16px;
+  top: 18px;
+  width: 2px;
+  height: calc(100% - 14px);
+  background: #e9ecef;
+}
+
+.timeline-item:last-child::after {
+  display: none;
+}
+
+.timeline-item.active::after {
+  background: #198754;
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+  .order-item {
+    padding: 12px;
+  }
+
+  .order-item-image {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+@media (max-width: 576px) {
+  .order-item {
+    flex-wrap: wrap;
+  }
+
+  .order-item-total {
+    width: 100%;
+    text-align: right;
+    margin-top: 8px;
+  }
+}

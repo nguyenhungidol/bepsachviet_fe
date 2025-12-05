@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import {
   createAdminPost,
   deleteAdminPost,
@@ -44,6 +44,246 @@ const formatDate = (dateString) => {
   } catch {
     return "—";
   }
+};
+
+// Rich Text Editor Component
+const RichTextEditor = ({ value, onChange, placeholder }) => {
+  const textareaRef = useRef(null);
+  const [showPreview, setShowPreview] = useState(false);
+
+  const insertTag = (tagStart, tagEnd = "") => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = value.substring(start, end);
+    const before = value.substring(0, start);
+    const after = value.substring(end);
+
+    const newText = before + tagStart + selectedText + tagEnd + after;
+    onChange(newText);
+
+    // Set cursor position after insertion
+    setTimeout(() => {
+      textarea.focus();
+      const newCursorPos =
+        start + tagStart.length + selectedText.length + tagEnd.length;
+      textarea.setSelectionRange(newCursorPos, newCursorPos);
+    }, 0);
+  };
+
+  const insertAtCursor = (text) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const before = value.substring(0, start);
+    const after = value.substring(start);
+
+    const newText = before + text + after;
+    onChange(newText);
+
+    setTimeout(() => {
+      textarea.focus();
+      const newCursorPos = start + text.length;
+      textarea.setSelectionRange(newCursorPos, newCursorPos);
+    }, 0);
+  };
+
+  const formatActions = [
+    {
+      icon: "bi-type-bold",
+      title: "In đậm (Ctrl+B)",
+      action: () => insertTag("<strong>", "</strong>"),
+    },
+    {
+      icon: "bi-type-italic",
+      title: "In nghiêng (Ctrl+I)",
+      action: () => insertTag("<em>", "</em>"),
+    },
+    {
+      icon: "bi-type-underline",
+      title: "Gạch chân",
+      action: () => insertTag("<u>", "</u>"),
+    },
+    { type: "divider" },
+    {
+      icon: "bi-type-h1",
+      title: "Tiêu đề H2",
+      action: () => insertTag("<h2>", "</h2>"),
+    },
+    {
+      icon: "bi-type-h2",
+      title: "Tiêu đề H3",
+      action: () => insertTag("<h3>", "</h3>"),
+    },
+    {
+      icon: "bi-type-h3",
+      title: "Tiêu đề H4",
+      action: () => insertTag("<h4>", "</h4>"),
+    },
+    { type: "divider" },
+    {
+      icon: "bi-list-ul",
+      title: "Danh sách",
+      action: () => insertTag("<ul>\n  <li>", "</li>\n</ul>"),
+    },
+    {
+      icon: "bi-list-ol",
+      title: "Danh sách số",
+      action: () => insertTag("<ol>\n  <li>", "</li>\n</ol>"),
+    },
+    {
+      icon: "bi-text-paragraph",
+      title: "Đoạn văn",
+      action: () => insertTag("<p>", "</p>"),
+    },
+    { type: "divider" },
+    {
+      icon: "bi-link-45deg",
+      title: "Chèn liên kết",
+      action: () => {
+        const url = prompt("Nhập URL:");
+        if (url) {
+          const textarea = textareaRef.current;
+          const selectedText =
+            value.substring(textarea.selectionStart, textarea.selectionEnd) ||
+            "Nhấn vào đây";
+          insertTag(`<a href="${url}" target="_blank">`, "</a>");
+        }
+      },
+    },
+    {
+      icon: "bi-image",
+      title: "Chèn ảnh",
+      action: () => {
+        const url = prompt("Nhập URL ảnh:");
+        if (url) {
+          insertAtCursor(
+            `<img src="${url}" alt="Mô tả ảnh" style="max-width: 100%; height: auto;" />`
+          );
+        }
+      },
+    },
+    {
+      icon: "bi-code-slash",
+      title: "Mã code",
+      action: () => insertTag("<code>", "</code>"),
+    },
+    { type: "divider" },
+    {
+      icon: "bi-blockquote-left",
+      title: "Trích dẫn",
+      action: () => insertTag("<blockquote>", "</blockquote>"),
+    },
+    {
+      icon: "bi-hr",
+      title: "Đường kẻ ngang",
+      action: () => insertAtCursor("\n<hr />\n"),
+    },
+  ];
+
+  const handleKeyDown = (e) => {
+    if (e.ctrlKey || e.metaKey) {
+      if (e.key === "b") {
+        e.preventDefault();
+        insertTag("<strong>", "</strong>");
+      } else if (e.key === "i") {
+        e.preventDefault();
+        insertTag("<em>", "</em>");
+      }
+    }
+  };
+
+  return (
+    <div className="rich-text-editor">
+      {/* Toolbar */}
+      <div className="editor-toolbar d-flex flex-wrap gap-1 p-2 bg-light border rounded-top">
+        {formatActions.map((action, index) =>
+          action.type === "divider" ? (
+            <div
+              key={index}
+              className="vr mx-1"
+              style={{ height: "24px" }}
+            ></div>
+          ) : (
+            <button
+              key={index}
+              type="button"
+              className="btn btn-sm btn-outline-secondary"
+              title={action.title}
+              onClick={action.action}
+              style={{ padding: "4px 8px" }}
+            >
+              <i className={`bi ${action.icon}`}></i>
+            </button>
+          )
+        )}
+        <div className="ms-auto">
+          <button
+            type="button"
+            className={`btn btn-sm ${
+              showPreview ? "btn-primary" : "btn-outline-primary"
+            }`}
+            onClick={() => setShowPreview(!showPreview)}
+            title="Xem trước"
+          >
+            <i className="bi bi-eye me-1"></i>
+            {showPreview ? "Ẩn xem trước" : "Xem trước"}
+          </button>
+        </div>
+      </div>
+
+      {/* Editor */}
+      <textarea
+        ref={textareaRef}
+        className="form-control rounded-0 rounded-bottom"
+        rows={12}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onKeyDown={handleKeyDown}
+        placeholder={placeholder}
+        style={{
+          fontFamily: "monospace",
+          fontSize: "14px",
+          borderTop: "none",
+          borderTopLeftRadius: 0,
+          borderTopRightRadius: 0,
+        }}
+      />
+
+      {/* Preview */}
+      {showPreview && (
+        <div className="mt-3">
+          <div className="d-flex align-items-center mb-2">
+            <h6 className="mb-0">
+              <i className="bi bi-eye me-2"></i>
+              Xem trước nội dung
+            </h6>
+          </div>
+          <div
+            className="border rounded p-3 bg-white"
+            style={{
+              minHeight: "200px",
+              maxHeight: "400px",
+              overflow: "auto",
+            }}
+            dangerouslySetInnerHTML={{
+              __html: value || "<em class='text-muted'>Chưa có nội dung</em>",
+            }}
+          />
+        </div>
+      )}
+
+      {/* Quick tips */}
+      <div className="form-text mt-2">
+        <strong>Mẹo SEO:</strong> Sử dụng tiêu đề H2, H3 để phân chia nội dung.
+        Thêm mô tả alt cho ảnh. Đoạn văn ngắn gọn, dễ đọc. Sử dụng danh sách để
+        liệt kê thông tin.
+      </div>
+    </div>
+  );
 };
 
 const AdminPosts = () => {
@@ -349,21 +589,16 @@ const AdminPosts = () => {
 
                 <div className="mb-3">
                   <label className="form-label">Nội dung bài viết</label>
-                  <textarea
-                    className="form-control"
-                    rows={8}
+                  <RichTextEditor
                     value={form.content}
-                    onChange={(event) =>
+                    onChange={(newContent) =>
                       setForm((prev) => ({
                         ...prev,
-                        content: event.target.value,
+                        content: newContent,
                       }))
                     }
-                    placeholder="Nội dung chi tiết bài viết (hỗ trợ HTML)"
+                    placeholder="Nhập nội dung bài viết. Sử dụng các nút trên thanh công cụ để định dạng."
                   />
-                  <div className="form-text">
-                    Có thể sử dụng HTML để định dạng nội dung.
-                  </div>
                 </div>
 
                 <div className="mb-3">

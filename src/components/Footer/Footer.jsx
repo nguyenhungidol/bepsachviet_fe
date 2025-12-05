@@ -99,24 +99,19 @@ function Footer() {
               <h5 className="footer-heading">HỖ TRỢ KHÁCH HÀNG</h5>
               <ul className="footer-link-list list-unstyled">
                 <li>
-                  <a href="/ho-tro-trang-chu">TRANG CHỦ</a>
+                  <a href="/don-hang-cua-toi">ĐƠN HÀNG CỦA TÔI</a>
                 </li>
                 <li>
-                  <a href="/ho-tro-san-pham">
-                    SẢN PHẨM <i className="bi bi-chevron-down"></i>
-                  </a>
+                  <a href="/tai-khoan">TÀI KHOẢN</a>
                 </li>
                 <li>
-                  <a href="/ho-tro-tin-tuc">TIN TỨC</a>
+                  <a href="/lien-he">HỖ TRỢ & LIÊN HỆ</a>
                 </li>
                 <li>
-                  <a href="/ho-tro-gioi-thieu">GIỚI THIỆU</a>
+                  <a href="/gioi-thieu">VỀ CHÚNG TÔI</a>
                 </li>
                 <li>
-                  <a href="/ho-tro-tuyen-dai-ly">TUYỂN ĐẠI LÝ</a>
-                </li>
-                <li>
-                  <a href="/ho-tro-lien-he">LIÊN HỆ</a>
+                  <a href="/tuyen-dai-ly">CHÍNH SÁCH ĐẠI LÝ</a>
                 </li>
               </ul>
             </Col>

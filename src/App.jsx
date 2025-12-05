@@ -17,6 +17,9 @@ import Register from "./pages/Register/Register";
 import ForgotPassword from "./pages/ForgotPassword/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword/ResetPassword";
 import TaiKhoan from "./pages/TaiKhoan/TaiKhoan";
+import MyOrders from "./pages/MyOrders/MyOrders";
+import Checkout from "./pages/Checkout/Checkout";
+import OrderDetail from "./pages/Order/OrderDetail";
 import PublicLayout from "./layouts/PublicLayout";
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
@@ -27,6 +30,8 @@ import AdminCategories from "./pages/Admin/AdminCategories";
 import AdminProducts from "./pages/Admin/AdminProducts";
 import AdminPosts from "./pages/Admin/AdminPosts";
 import AdminUsers from "./pages/Admin/AdminUsers";
+import AdminOrders from "./pages/Admin/AdminOrders";
+import AdminMarketingPlan from "./pages/Admin/AdminMarketingPlan";
 
 function App() {
   return (
@@ -62,6 +67,9 @@ function App() {
               <Route path="/dat-lai-mat-khau" element={<ResetPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/tai-khoan" element={<TaiKhoan />} />
+              <Route path="/don-hang-cua-toi" element={<MyOrders />} />
+              <Route path="/thanh-toan" element={<Checkout />} />
+              <Route path="/don-hang/:orderId" element={<OrderDetail />} />
             </Route>
 
             <Route
@@ -75,6 +83,8 @@ function App() {
               <Route index element={<AdminDashboard />} />
               <Route path="categories" element={<AdminCategories />} />
               <Route path="products" element={<AdminProducts />} />
+              <Route path="orders" element={<AdminOrders />} />
+              <Route path="marketing" element={<AdminMarketingPlan />} />
               <Route path="posts" element={<AdminPosts />} />
               <Route path="users" element={<AdminUsers />} />
             </Route>

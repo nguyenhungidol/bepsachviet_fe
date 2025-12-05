@@ -98,9 +98,18 @@ const LoadingSkeleton = () => (
   </div>
 );
 
-const QuantitySelector = ({ quantity, onChange }) => {
+const QuantitySelector = ({ quantity, onChange, max = null }) => {
   const decrease = () => onChange(Math.max(1, quantity - 1));
-  const increase = () => onChange(quantity + 1);
+  const increase = () => {
+    if (max !== null && quantity >= max) return;
+    onChange(quantity + 1);
+  };
+
+  const handleChange = (e) => {
+    let value = Math.max(1, parseInt(e.target.value) || 1);
+    if (max !== null) value = Math.min(value, max);
+    onChange(value);
+  };
 
   return (
     <div className="quantity-selector">
@@ -112,9 +121,15 @@ const QuantitySelector = ({ quantity, onChange }) => {
         className="quantity-input"
         value={quantity}
         min="1"
-        onChange={(e) => onChange(Math.max(1, parseInt(e.target.value) || 1))}
+        max={max || undefined}
+        onChange={handleChange}
       />
-      <button type="button" className="quantity-btn" onClick={increase}>
+      <button
+        type="button"
+        className="quantity-btn"
+        onClick={increase}
+        disabled={max !== null && quantity >= max}
+      >
         +
       </button>
     </div>
@@ -394,11 +409,37 @@ function ProductDetail() {
                           <QuantitySelector
                             quantity={quantity}
                             onChange={setQuantity}
+                            max={
+                              product.stockQuantity > 0
+                                ? product.stockQuantity
+                                : null
+                            }
                           />
+                          {product.stockQuantity !== null &&
+                            product.stockQuantity !== undefined &&
+                            product.stockQuantity > 0 && (
+                              <span className="stock-info ms-3 text-muted small">
+                                Còn {product.stockQuantity} sản phẩm
+                              </span>
+                            )}
                         </div>
 
                         <div className="product-actions">
-                          {product.price > 0 ? (
+                          {product.stockQuantity !== null &&
+                          product.stockQuantity !== undefined &&
+                          product.stockQuantity <= 0 ? (
+                            <button
+                              type="button"
+                              className="btn-add-cart"
+                              style={{
+                                background: "#dc3545",
+                                cursor: "not-allowed",
+                              }}
+                              disabled
+                            >
+                              Hết hàng
+                            </button>
+                          ) : product.price > 0 ? (
                             <button
                               type="button"
                               className="btn-add-cart"
@@ -517,9 +558,18 @@ function ProductDetail() {
                             <tr>
                               <th>Tình trạng</th>
                               <td>
-                                <span className="text-success fw-bold">
-                                  Còn hàng
-                                </span>
+                                {product.stockQuantity === null ||
+                                product.stockQuantity === undefined ? (
+                                  <span className="text-muted">Liên hệ</span>
+                                ) : product.stockQuantity > 0 ? (
+                                  <span className="text-success fw-bold">
+                                    Còn hàng ({product.stockQuantity})
+                                  </span>
+                                ) : (
+                                  <span className="text-danger fw-bold">
+                                    Hết hàng
+                                  </span>
+                                )}
                               </td>
                             </tr>
                           </tbody>
