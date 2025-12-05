@@ -138,6 +138,13 @@ function TopBar() {
                   </button>
                   <button
                     type="button"
+                    className="user-menu-item"
+                    onClick={() => navigate("/don-hang-cua-toi")}
+                  >
+                    Đơn hàng của tôi
+                  </button>
+                  <button
+                    type="button"
                     className="user-menu-item logout"
                     onClick={handleLogout}
                   >

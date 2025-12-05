@@ -167,3 +167,122 @@
   margin: 0;
   color: #495057;
 }
+
+/* Rich Text Editor Styles */
+.rich-text-editor {
+  border-radius: 8px;
+}
+
+.rich-text-editor .editor-toolbar {
+  border-bottom: none;
+  gap: 4px;
+}
+
+.rich-text-editor .editor-toolbar .btn {
+  border-radius: 4px;
+  min-width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rich-text-editor .editor-toolbar .btn:hover {
+  background-color: #e9ecef;
+}
+
+.rich-text-editor .editor-toolbar .vr {
+  opacity: 0.3;
+}
+
+.rich-text-editor textarea {
+  resize: vertical;
+  min-height: 200px;
+}
+
+.rich-text-editor textarea:focus {
+  border-color: #198754;
+  box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.15);
+}
+
+/* Preview Styles for Rich Text Editor */
+.rich-text-editor div[class*="preview"] h2,
+.rich-text-editor .border h2 {
+  font-size: 1.5rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  color: #333;
+}
+
+.rich-text-editor div[class*="preview"] h3,
+.rich-text-editor .border h3 {
+  font-size: 1.25rem;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: #444;
+}
+
+.rich-text-editor div[class*="preview"] h4,
+.rich-text-editor .border h4 {
+  font-size: 1.1rem;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  color: #555;
+}
+
+.rich-text-editor div[class*="preview"] p,
+.rich-text-editor .border p {
+  margin-bottom: 1rem;
+  line-height: 1.7;
+}
+
+.rich-text-editor div[class*="preview"] ul,
+.rich-text-editor div[class*="preview"] ol,
+.rich-text-editor .border ul,
+.rich-text-editor .border ol {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+.rich-text-editor div[class*="preview"] li,
+.rich-text-editor .border li {
+  margin-bottom: 0.5rem;
+}
+
+.rich-text-editor div[class*="preview"] blockquote,
+.rich-text-editor .border blockquote {
+  border-left: 4px solid #198754;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: #666;
+  font-style: italic;
+}
+
+.rich-text-editor div[class*="preview"] img,
+.rich-text-editor .border img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.rich-text-editor div[class*="preview"] a,
+.rich-text-editor .border a {
+  color: #198754;
+  text-decoration: underline;
+}
+
+.rich-text-editor div[class*="preview"] code,
+.rich-text-editor .border code {
+  background: #f4f4f4;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.rich-text-editor div[class*="preview"] hr,
+.rich-text-editor .border hr {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 1.5rem 0;
+}

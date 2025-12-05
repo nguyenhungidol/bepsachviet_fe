@@ -169,6 +169,42 @@ export const CartProvider = ({ children }) => {
   // Add item to cart
   const addItem = useCallback(
     async (product, quantity = 1) => {
+      // Check stock quantity before adding
+      const stockQuantity = product.stockQuantity;
+      if (
+        stockQuantity !== null &&
+        stockQuantity !== undefined &&
+        stockQuantity <= 0
+      ) {
+        toast.error(`Sản phẩm "${product.name}" đã hết hàng!`);
+        return;
+      }
+
+      // Check if product already exists in cart
+      const productId = product.productId || product.id;
+      const existingItem = cart.items.find(
+        (item) => (item.productId || item.id) === productId
+      );
+      const currentQtyInCart = existingItem ? existingItem.quantity : 0;
+      const totalRequestedQty = currentQtyInCart + quantity;
+
+      // Check if total quantity exceeds available stock
+      if (
+        stockQuantity !== null &&
+        stockQuantity !== undefined &&
+        totalRequestedQty > stockQuantity
+      ) {
+        const availableToAdd = stockQuantity - currentQtyInCart;
+        if (availableToAdd <= 0) {
+          toast.warning(`Đã đạt số lượng tối đa trong kho!`);
+          return;
+        }
+        toast.warning(
+          `Chỉ còn ${availableToAdd} sản phẩm có thể thêm vào giỏ!`
+        );
+        quantity = availableToAdd;
+      }
+
       try {
         if (isAuthenticated) {
           const productId = product.productId || product.id;
@@ -197,36 +233,74 @@ export const CartProvider = ({ children }) => {
         toast.error("Không thể thêm sản phẩm vào giỏ hàng.");
       }
     },
-    [isAuthenticated, calculateCartTotals]
+    [isAuthenticated, calculateCartTotals, cart.items]
   );
 
   // Update item quantity
   const updateItem = useCallback(
-    async (itemId, quantity) => {
+    async (itemId, quantity, stockQuantity = null) => {
+      console.log("[CartContext] updateItem called:", {
+        itemId,
+        quantity,
+        stockQuantity,
+      });
+
+      // Ensure minimum quantity is 1
+      if (quantity < 1) {
+        quantity = 1;
+      }
+
+      // Validate quantity against stock (only if stockQuantity is known)
+      if (
+        stockQuantity !== null &&
+        stockQuantity !== undefined &&
+        quantity > stockQuantity
+      ) {
+        toast.warning(`Chỉ còn ${stockQuantity} sản phẩm trong kho!`, {
+          toastId: `stock-limit-${itemId}`, // Prevent duplicate toasts
+        });
+        return; // Don't proceed - just show the warning
+      }
+
+      // Find current item to check if quantity actually changed
+      const currentItem = cart.items.find(
+        (item) => (item.itemId || item.productId) === itemId
+      );
+
+      console.log("[CartContext] currentItem:", currentItem);
+
+      if (currentItem && currentItem.quantity === quantity) {
+        console.log("[CartContext] No change needed, returning");
+        return; // No change needed
+      }
+
       try {
         if (isAuthenticated) {
           try {
+            console.log("[CartContext] Calling API updateCartItem...");
             // --- FIX: Gọi API update, sau đó gọi lại fetchCart ---
             await updateCartItem(itemId, quantity);
 
             // Lấy lại toàn bộ giỏ hàng mới nhất
+            console.log("[CartContext] Fetching fresh cart...");
             const freshCart = await fetchCart();
+            console.log("[CartContext] Fresh cart received:", freshCart);
             setCart(freshCart);
           } catch (apiError) {
-            console.warn("API cart failed, using localStorage", apiError);
-            const updatedItems = updateLocalCartItem(itemId, quantity);
-            setCart(calculateCartTotals(updatedItems));
+            console.warn("[CartContext] API cart failed:", apiError);
+            // Keep current cart state on error - don't modify
+            toast.warning(`Đã đạt số lượng tối đa trong kho!`);
           }
         } else {
           const updatedItems = updateLocalCartItem(itemId, quantity);
           setCart(calculateCartTotals(updatedItems));
         }
       } catch (error) {
-        console.error("Failed to update item", error);
+        console.error("[CartContext] Failed to update item", error);
         toast.error("Không thể cập nhật số lượng.");
       }
     },
-    [isAuthenticated, calculateCartTotals]
+    [isAuthenticated, calculateCartTotals, cart.items]
   );
 
   // Remove item from cart

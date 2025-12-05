@@ -143,6 +143,8 @@ const normalizeProduct = (product) => {
     priceLabel: formatPriceLabel(product.price ?? product.priceLabel),
     categoryId: product.categoryId || product.category?.categoryId || null,
     categoryName: product.categoryName || product.category?.name || null,
+    stockQuantity:
+      product.stockQuantity ?? product.stock ?? product.quantity ?? null,
     isBestSeller:
       product.bestSeller ?? product.isBestSeller ?? hasTag("BEST") ?? false,
     isNew: product.isNew ?? product.newProduct ?? hasTag("NEW") ?? false,

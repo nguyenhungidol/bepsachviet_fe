@@ -32,6 +32,8 @@ const ProductCard = ({ product, imageSrc, name, price, ocUrl }) => {
   const ocopImage =
     ocUrl || resolvedProduct.ocUrl || resolvedProduct.ocopImageUrl || null;
   const rawPrice = resolvedProduct.price;
+  const stockQuantity = resolvedProduct.stockQuantity ?? null;
+  const isOutOfStock = stockQuantity !== null && stockQuantity <= 0;
 
   const productLink = `/san-pham/${
     resolvedProduct.productId || resolvedProduct.id || "unknown"
@@ -56,8 +58,10 @@ const ProductCard = ({ product, imageSrc, name, price, ocUrl }) => {
             onError={handleImageError}
             referrerPolicy="no-referrer"
           />
+          {/* Out of stock badge */}
+          {isOutOfStock && <div className="out-of-stock-badge">Hết hàng</div>}
           {/* Add to cart button overlay */}
-          {rawPrice > 0 && (
+          {rawPrice > 0 && !isOutOfStock && (
             <button
               type="button"
               className="btn-quick-add"
@@ -79,6 +83,18 @@ const ProductCard = ({ product, imageSrc, name, price, ocUrl }) => {
             <span className="price-label">Giá bán:</span>{" "}
             <span className="price-number">{priceLabel}</span>
           </p>
+          {/* Stock quantity display */}
+          {stockQuantity !== null && (
+            <p className="product-stock">
+              {stockQuantity > 0 ? (
+                <span className="stock-available">
+                  Còn {stockQuantity} sản phẩm
+                </span>
+              ) : (
+                <span className="stock-out">Hết hàng</span>
+              )}
+            </p>
+          )}
         </div>
       </div>
     </Link>

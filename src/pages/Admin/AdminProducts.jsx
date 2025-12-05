@@ -26,8 +26,10 @@ const getOcopStarsFromUrl = (url) => {
 };
 
 const initialProductForm = {
+  productId: "",
   name: "",
   price: "",
+  stockQuantity: "",
   description: "",
   categoryId: "",
   imageSrc: "",
@@ -100,10 +102,16 @@ const AdminProducts = () => {
     setSubmitting(true);
 
     const parsedPrice = Number(form.price);
+    const parsedStock = Number(form.stockQuantity);
     const payload = {
+      productId: form.productId?.trim() || undefined,
       name: form.name?.trim(),
       description: form.description?.trim() || undefined,
       price: Number.isFinite(parsedPrice) ? parsedPrice : undefined,
+      stockQuantity:
+        Number.isFinite(parsedStock) && parsedStock >= 0
+          ? parsedStock
+          : undefined,
       categoryId: form.categoryId || undefined,
       imageSrc: form.imageSrc?.trim() || undefined,
       ocUrl: form.ocopStars ? OCOP_BADGES[form.ocopStars] : undefined,
@@ -148,8 +156,10 @@ const AdminProducts = () => {
     const productId = product.productId || product.id;
     setEditingId(productId);
     setForm({
+      productId: product.productId || "",
       name: product.name || "",
       price: product.price?.toString() || "",
+      stockQuantity: product.stockQuantity?.toString() || "",
       description: product.description || "",
       categoryId:
         product.categoryId ||
@@ -234,6 +244,24 @@ const AdminProducts = () => {
               </h5>
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
+                  <label className="form-label">Mã sản phẩm</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={form.productId}
+                    onChange={(event) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        productId: event.target.value,
+                      }))
+                    }
+                    placeholder="Ví dụ: SP001, COMBO-01"
+                  />
+                  <div className="form-text">
+                    Mã sản phẩm dùng để tra cứu nhanh. Để trống nếu tự động tạo.
+                  </div>
+                </div>
+                <div className="mb-3">
                   <label className="form-label">Tên sản phẩm</label>
                   <input
                     type="text"
@@ -259,6 +287,25 @@ const AdminProducts = () => {
                       }))
                     }
                   />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Số lượng tồn kho</label>
+                  <input
+                    type="number"
+                    min="0"
+                    className="form-control"
+                    value={form.stockQuantity}
+                    onChange={(event) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        stockQuantity: event.target.value,
+                      }))
+                    }
+                    placeholder="Để trống nếu không quản lý tồn kho"
+                  />
+                  <div className="form-text">
+                    Nhập 0 nếu hết hàng, để trống nếu không áp dụng.
+                  </div>
                 </div>
                 <div className="mb-3">
                   <label className="form-label">Danh mục</label>
@@ -410,6 +457,7 @@ const AdminProducts = () => {
                     <th>Sản phẩm</th>
                     <th>Danh mục</th>
                     <th>Giá</th>
+                    <th>Tồn kho</th>
                     <th>Trạng thái</th>
                     <th className="text-end">Hành động</th>
                   </tr>
@@ -472,6 +520,18 @@ const AdminProducts = () => {
                           )}
                         </td>
                         <td>{product.price?.toLocaleString("vi-VN")} ₫</td>
+                        <td>
+                          {product.stockQuantity === null ||
+                          product.stockQuantity === undefined ? (
+                            <span className="text-muted">—</span>
+                          ) : product.stockQuantity > 0 ? (
+                            <span className="text-success fw-semibold">
+                              {product.stockQuantity}
+                            </span>
+                          ) : (
+                            <span className="badge bg-danger">Hết hàng</span>
+                          )}
+                        </td>
                         <td>
                           {isActive ? (
                             <span className="badge bg-success">Đang bán</span>

@@ -61,6 +61,10 @@ export const addToLocalCart = (product, quantity = 1) => {
 
   if (existingIndex >= 0) {
     cart[existingIndex].quantity += quantity;
+    // Update stockQuantity in case it changed
+    if (product.stockQuantity !== undefined) {
+      cart[existingIndex].stockQuantity = product.stockQuantity;
+    }
   } else {
     // Generate a unique itemId for localStorage items
     const itemId = `local_${productId}_${Date.now()}`;
@@ -71,6 +75,7 @@ export const addToLocalCart = (product, quantity = 1) => {
       price: product.price,
       imageSrc: product.imageSrc || product.imageUrl,
       quantity,
+      stockQuantity: product.stockQuantity ?? null,
     });
   }
 
@@ -286,6 +291,13 @@ const normalizeCartItem = (item) => {
       "https://via.placeholder.com/100?text=No+Image", // <-- Fallback image
 
     quantity: item.quantity || 1,
+
+    // Stock quantity for validation
+    stockQuantity:
+      item.stockQuantity ??
+      item.productStockQuantity ??
+      item.product?.stockQuantity ??
+      null,
   };
 };
 
