@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   createAdminProduct,
   deleteAdminProduct,
+  restoreAdminProduct,
   fetchAdminCategories,
   fetchAdminProducts,
   updateAdminProduct,
@@ -45,12 +46,26 @@ const AdminProducts = () => {
   const [editingId, setEditingId] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [deletingIds, setDeletingIds] = useState({});
+  const [restoringIds, setRestoringIds] = useState({});
   const [uploading, setUploading] = useState(false);
+  const [showInactive, setShowInactive] = useState(false); // Filter for inactive products
 
   const normalizedProducts = useMemo(
     () => (Array.isArray(products) ? products : products?.content || []),
     [products]
   );
+
+  // Filter products based on active status
+  const filteredProducts = useMemo(() => {
+    if (showInactive) {
+      return normalizedProducts; // Show all products
+    }
+    // Check both 'active' and 'isActive' for compatibility
+    return normalizedProducts.filter(
+      (p) => p.active !== false && p.isActive !== false
+    );
+  }, [normalizedProducts, showInactive]);
+
   const normalizedCategories = useMemo(
     () => (Array.isArray(categories) ? categories : categories?.content || []),
     [categories]
@@ -115,6 +130,9 @@ const AdminProducts = () => {
       categoryId: form.categoryId || undefined,
       imageSrc: form.imageSrc?.trim() || undefined,
       ocUrl: form.ocopStars ? OCOP_BADGES[form.ocopStars] : undefined,
+      // Send both field names for compatibility - backend will use whichever it recognizes
+      isActive: true,
+      active: true,
     };
 
     try {
@@ -173,22 +191,86 @@ const AdminProducts = () => {
 
   const handleDelete = async (productId) => {
     if (!productId) return;
-    const confirmed = window.confirm("Bạn có chắc muốn xóa sản phẩm này?");
+    const confirmed = window.confirm(
+      "Bạn có chắc muốn ẩn sản phẩm này? Sản phẩm sẽ không hiển thị với khách hàng nhưng vẫn được lưu trong hệ thống."
+    );
     if (!confirmed) return;
+
+    // Find the product to get its data for the API call
+    const product = normalizedProducts.find(
+      (p) => (p.productId || p.id) === productId
+    );
+    if (!product) {
+      toast.error("Không tìm thấy sản phẩm.");
+      return;
+    }
 
     setDeletingIds((prev) => ({ ...prev, [productId]: true }));
 
     try {
-      await deleteAdminProduct(productId);
+      // Pass product data for backend validation
+      await deleteAdminProduct(productId, {
+        productId: product.productId || product.id,
+        name: product.name,
+        price: product.price,
+        description: product.description,
+        categoryId: product.categoryId || product.category?.id,
+        imageSrc: product.imageSrc || product.imageUrl,
+        stockQuantity: product.stockQuantity,
+      });
+      toast.success("Đã ẩn sản phẩm thành công!");
       await loadProducts();
       if (editingId === productId) {
         resetForm();
       }
     } catch (err) {
-      console.error("Failed to delete product", err);
-      toast.error(err.message || "Không thể xóa sản phẩm.");
+      console.error("Failed to deactivate product", err);
+      toast.error(err.message || "Không thể ẩn sản phẩm.");
     } finally {
       setDeletingIds((prev) => {
+        const next = { ...prev };
+        delete next[productId];
+        return next;
+      });
+    }
+  };
+
+  const handleRestore = async (productId) => {
+    if (!productId) return;
+    const confirmed = window.confirm(
+      "Bạn có chắc muốn khôi phục sản phẩm này?"
+    );
+    if (!confirmed) return;
+
+    // Find the product to get its data for the API call
+    const product = normalizedProducts.find(
+      (p) => (p.productId || p.id) === productId
+    );
+    if (!product) {
+      toast.error("Không tìm thấy sản phẩm.");
+      return;
+    }
+
+    setRestoringIds((prev) => ({ ...prev, [productId]: true }));
+
+    try {
+      // Pass product data for backend validation
+      await restoreAdminProduct(productId, {
+        productId: product.productId || product.id,
+        name: product.name,
+        price: product.price,
+        description: product.description,
+        categoryId: product.categoryId || product.category?.id,
+        imageSrc: product.imageSrc || product.imageUrl,
+        stockQuantity: product.stockQuantity,
+      });
+      toast.success("Đã khôi phục sản phẩm thành công!");
+      await loadProducts();
+    } catch (err) {
+      console.error("Failed to restore product", err);
+      toast.error(err.message || "Không thể khôi phục sản phẩm.");
+    } finally {
+      setRestoringIds((prev) => {
         const next = { ...prev };
         delete next[productId];
         return next;
@@ -226,13 +308,27 @@ const AdminProducts = () => {
             Tạo mới, chỉnh sửa chi tiết và cập nhật tình trạng hàng hóa.
           </p>
         </div>
-        <button
-          type="button"
-          className="btn btn-outline-secondary"
-          onClick={loadProducts}
-        >
-          Làm mới
-        </button>
+        <div className="d-flex gap-2 align-items-center">
+          <div className="form-check form-switch">
+            <input
+              className="form-check-input"
+              type="checkbox"
+              id="showInactiveProducts"
+              checked={showInactive}
+              onChange={(e) => setShowInactive(e.target.checked)}
+            />
+            <label className="form-check-label" htmlFor="showInactiveProducts">
+              Hiển thị sản phẩm đã ẩn
+            </label>
+          </div>
+          <button
+            type="button"
+            className="btn btn-outline-secondary"
+            onClick={loadProducts}
+          >
+            Làm mới
+          </button>
+        </div>
       </div>
 
       <div className="row g-4">
@@ -443,11 +539,37 @@ const AdminProducts = () => {
         </div>
 
         <div className="col-12 col-xl-8">
+          {/* Filter toggle for inactive products */}
+          <div className="mb-3 d-flex align-items-center gap-3">
+            <div className="form-check form-switch">
+              <input
+                className="form-check-input"
+                type="checkbox"
+                id="showInactiveProducts"
+                checked={showInactive}
+                onChange={(e) => setShowInactive(e.target.checked)}
+              />
+              <label
+                className="form-check-label"
+                htmlFor="showInactiveProducts"
+              >
+                Hiển thị sản phẩm đã ẩn
+              </label>
+            </div>
+            <small className="text-muted">
+              ({filteredProducts.length} / {normalizedProducts.length} sản phẩm)
+            </small>
+          </div>
+
           {loadingProducts ? (
             <p>Đang tải danh sách sản phẩm...</p>
-          ) : normalizedProducts.length === 0 ? (
+          ) : filteredProducts.length === 0 ? (
             <div className="admin-empty-state">
-              <p>Chưa có sản phẩm nào.</p>
+              <p>
+                {showInactive
+                  ? "Chưa có sản phẩm nào."
+                  : "Không có sản phẩm đang bán."}
+              </p>
             </div>
           ) : (
             <div className="table-responsive">
@@ -463,7 +585,7 @@ const AdminProducts = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {normalizedProducts.map((product) => {
+                  {filteredProducts.map((product) => {
                     const productId = product.productId || product.id;
                     const categoryMatch = normalizedCategories.find(
                       (category) =>
@@ -473,8 +595,11 @@ const AdminProducts = () => {
                     const categoryName =
                       product.category?.name || categoryMatch?.name || "—";
                     const categoryInactive = categoryMatch?.active === false;
+                    // Check both 'active' and 'isActive' for compatibility with backend
                     const isActive =
-                      typeof product.active === "boolean"
+                      typeof product.isActive === "boolean"
+                        ? product.isActive
+                        : typeof product.active === "boolean"
                         ? product.active
                         : product.status
                         ? product.status.toUpperCase() === "ACTIVE"
@@ -550,14 +675,29 @@ const AdminProducts = () => {
                             >
                               Sửa
                             </button>
-                            <button
-                              type="button"
-                              className="btn btn-outline-danger"
-                              disabled={Boolean(deletingIds[productId])}
-                              onClick={() => handleDelete(productId)}
-                            >
-                              {deletingIds[productId] ? "Đang xóa..." : "Xóa"}
-                            </button>
+                            {isActive ? (
+                              <button
+                                type="button"
+                                className="btn btn-outline-danger"
+                                disabled={Boolean(deletingIds[productId])}
+                                onClick={() => handleDelete(productId)}
+                                title="Ẩn sản phẩm"
+                              >
+                                {deletingIds[productId] ? "Đang ẩn..." : "Ẩn"}
+                              </button>
+                            ) : (
+                              <button
+                                type="button"
+                                className="btn btn-outline-success"
+                                disabled={Boolean(restoringIds[productId])}
+                                onClick={() => handleRestore(productId)}
+                                title="Khôi phục sản phẩm"
+                              >
+                                {restoringIds[productId]
+                                  ? "Đang khôi phục..."
+                                  : "Khôi phục"}
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>

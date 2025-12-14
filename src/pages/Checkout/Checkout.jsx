@@ -7,6 +7,7 @@ import {
   Button,
   Card,
   Spinner,
+  Alert,
 } from "react-bootstrap";
 import { NavLink, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -23,10 +24,23 @@ const FALLBACK_IMAGE = "https://via.placeholder.com/80x80?text=No+Image";
 const Checkout = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
-  const { items, totalPrice, formatPrice, clearAllItems, refreshCart } =
-    useCart();
+  const {
+    items,
+    totalPrice,
+    formatPrice,
+    clearAllItems,
+    refreshCart,
+    validateCart,
+    validating,
+    invalidItems,
+    isItemInvalid,
+    getInvalidItemInfo,
+    removeItem,
+  } = useCart();
 
   const [loading, setLoading] = useState(false);
+  const [cartValidated, setCartValidated] = useState(false);
+  const [hasInvalidItems, setHasInvalidItems] = useState(false);
   const [form, setForm] = useState({
     deliveryName: "",
     deliveryPhone: "",
@@ -51,6 +65,18 @@ const Checkout = () => {
       }
     }
   }, [isAuthenticated]);
+
+  // Validate cart on page load
+  useEffect(() => {
+    const doValidation = async () => {
+      if (items && items.length > 0 && !cartValidated) {
+        const result = await validateCart();
+        setHasInvalidItems(result.hasInvalidItems);
+        setCartValidated(true);
+      }
+    };
+    doValidation();
+  }, [items, validateCart, cartValidated]);
 
   // Redirect if cart is empty
   useEffect(() => {
@@ -96,13 +122,31 @@ const Checkout = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Check for invalid items first
+    if (hasInvalidItems || invalidItems.length > 0) {
+      toast.error(
+        "Vui lòng xóa các sản phẩm không khả dụng trước khi đặt hàng."
+      );
+      return;
+    }
+
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
 
+    // Re-validate cart before submit
     setLoading(true);
+    const cartValidation = await validateCart();
+    if (cartValidation.hasInvalidItems) {
+      setHasInvalidItems(true);
+      toast.error(
+        "Có sản phẩm không khả dụng. Vui lòng kiểm tra lại giỏ hàng."
+      );
+      setLoading(false);
+      return;
+    }
     try {
       // Map to backend field names (CreateOrderRequest)
       const orderData = {
@@ -302,12 +346,22 @@ const Checkout = () => {
                     variant="success"
                     size="lg"
                     className="w-100 mt-4 checkout-btn"
-                    disabled={loading}
+                    disabled={loading || validating || hasInvalidItems}
                   >
                     {loading ? (
                       <>
                         <Spinner size="sm" className="me-2" />
                         Đang xử lý...
+                      </>
+                    ) : validating ? (
+                      <>
+                        <Spinner size="sm" className="me-2" />
+                        Đang kiểm tra...
+                      </>
+                    ) : hasInvalidItems ? (
+                      <>
+                        <i className="bi bi-exclamation-triangle me-2"></i>
+                        Có sản phẩm không khả dụng
                       </>
                     ) : form.paymentMethod === "MOMO" ? (
                       <>
@@ -339,31 +393,92 @@ const Checkout = () => {
                 </h5>
               </Card.Header>
               <Card.Body className="p-0">
+                {/* Validation in progress */}
+                {validating && (
+                  <div className="text-center p-3">
+                    <Spinner animation="border" size="sm" className="me-2" />
+                    Đang kiểm tra sản phẩm...
+                  </div>
+                )}
+
+                {/* Invalid items warning */}
+                {hasInvalidItems && invalidItems.length > 0 && (
+                  <Alert variant="danger" className="m-3 mb-0">
+                    <Alert.Heading className="h6">
+                      <i className="bi bi-exclamation-triangle me-2"></i>
+                      Có sản phẩm không khả dụng
+                    </Alert.Heading>
+                    <p className="mb-0 small">
+                      Vui lòng xóa các sản phẩm không khả dụng để tiếp tục đặt
+                      hàng.
+                    </p>
+                  </Alert>
+                )}
+
                 <div className="order-items">
-                  {items.map((item) => (
-                    <div
-                      key={item.itemId || item.productId}
-                      className="order-item"
-                    >
-                      <img
-                        src={item.imageSrc || FALLBACK_IMAGE}
-                        alt={item.name}
-                        className="order-item-image"
-                        onError={(e) => {
-                          e.target.src = FALLBACK_IMAGE;
-                        }}
-                      />
-                      <div className="order-item-info">
-                        <p className="order-item-name">{item.name}</p>
-                        <p className="order-item-price">
-                          {formatPrice(item.price)} x {item.quantity}
-                        </p>
+                  {items.map((item) => {
+                    const productDisplayId =
+                      item.productId || item.id || item.itemId;
+                    const deleteId = item.itemId || item.id || item.productId;
+                    const isInvalid = isItemInvalid(productDisplayId);
+                    const invalidInfo = getInvalidItemInfo(productDisplayId);
+
+                    return (
+                      <div
+                        key={item.itemId || item.productId}
+                        className={`order-item ${
+                          isInvalid ? "order-item-invalid" : ""
+                        }`}
+                        style={
+                          isInvalid
+                            ? { opacity: 0.6, backgroundColor: "#fff3cd" }
+                            : {}
+                        }
+                      >
+                        <img
+                          src={item.imageSrc || FALLBACK_IMAGE}
+                          alt={item.name}
+                          className="order-item-image"
+                          onError={(e) => {
+                            e.target.src = FALLBACK_IMAGE;
+                          }}
+                          style={isInvalid ? { filter: "grayscale(100%)" } : {}}
+                        />
+                        <div className="order-item-info" key={productDisplayId}>
+                          <p className="order-item-name">
+                            {item.name}
+                            {isInvalid && (
+                              <span className="badge bg-danger ms-2">
+                                {invalidInfo?.message || "Không khả dụng"}
+                              </span>
+                            )}
+                          </p>
+                          <p className="order-item-price">
+                            {formatPrice(item.price)} x {item.quantity}
+                          </p>
+                          {isInvalid && (
+                            <Button
+                              variant="outline-danger"
+                              size="sm"
+                              onClick={() => removeItem(deleteId)}
+                            >
+                              <i className="bi bi-trash me-1"></i>
+                              Xóa khỏi giỏ
+                            </Button>
+                          )}
+                        </div>
+                        <div className="order-item-total">
+                          {isInvalid ? (
+                            <span className="text-danger text-decoration-line-through">
+                              {formatPrice(item.price * item.quantity)}
+                            </span>
+                          ) : (
+                            formatPrice(item.price * item.quantity)
+                          )}
+                        </div>
                       </div>
-                      <div className="order-item-total">
-                        {formatPrice(item.price * item.quantity)}
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 <div className="order-summary-footer">

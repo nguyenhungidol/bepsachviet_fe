@@ -39,59 +39,67 @@ const AdminOrders = () => {
   // Status update
   const [updatingStatus, setUpdatingStatus] = useState(false);
 
+  // Store all orders for client-side filtering
+  const [allOrders, setAllOrders] = useState([]);
+
   const loadOrders = useCallback(async () => {
     setLoading(true);
     try {
-      // If searching by order ID, use the specific endpoint
+      // Load orders from API (with status filter if set)
+      const response = await fetchAdminOrders({
+        page: appliedSearch ? 0 : pagination.page, // Load from first page when searching
+        size: appliedSearch ? 1000 : pagination.size, // Load more when searching to filter client-side
+        status: statusFilter || undefined,
+      });
+
+      // Handle paginated response
+      const content = response.content || response.orders || response;
+      const ordersList = Array.isArray(content) ? content : [];
+
+      // If searching, filter client-side by order ID or customer name
       if (appliedSearch) {
-        try {
-          const order = await fetchAdminOrderById(appliedSearch.trim());
-          // If status filter is set, check if order matches
-          if (statusFilter && order.status !== statusFilter) {
-            setOrders([]);
-            setPagination((prev) => ({
-              ...prev,
-              totalPages: 0,
-              totalElements: 0,
-            }));
-          } else {
-            setOrders([order]);
-            setPagination((prev) => ({
-              ...prev,
-              totalPages: 1,
-              totalElements: 1,
-            }));
-          }
-        } catch {
-          // Order not found
-          setOrders([]);
-          setPagination((prev) => ({
-            ...prev,
-            totalPages: 0,
-            totalElements: 0,
-          }));
-        }
-      } else {
-        // Load all orders with pagination
-        const response = await fetchAdminOrders({
-          page: pagination.page,
-          size: pagination.size,
-          status: statusFilter || undefined,
+        const searchTerm = appliedSearch.trim().toLowerCase().replace(/^#/, "");
+        const filteredOrders = ordersList.filter((order) => {
+          const orderId = (order.orderId || order.id || "")
+            .toString()
+            .toLowerCase();
+          const customerName = (order.deliveryName || "").toLowerCase();
+          const customerPhone = (order.deliveryPhone || "").toLowerCase();
+
+          return (
+            orderId.includes(searchTerm) ||
+            customerName.includes(searchTerm) ||
+            customerPhone.includes(searchTerm)
+          );
         });
 
-        // Handle paginated response
-        const content = response.content || response.orders || response;
-        setOrders(Array.isArray(content) ? content : []);
+        setAllOrders(filteredOrders);
+        // Client-side pagination for filtered results
+        const startIndex = pagination.page * pagination.size;
+        const paginatedOrders = filteredOrders.slice(
+          startIndex,
+          startIndex + pagination.size
+        );
+        setOrders(paginatedOrders);
+        setPagination((prev) => ({
+          ...prev,
+          totalPages: Math.ceil(filteredOrders.length / pagination.size) || 1,
+          totalElements: filteredOrders.length,
+        }));
+      } else {
+        setAllOrders(ordersList);
+        setOrders(ordersList);
         setPagination((prev) => ({
           ...prev,
           totalPages: response.totalPages || 1,
-          totalElements: response.totalElements || content.length,
+          totalElements: response.totalElements || ordersList.length,
         }));
       }
     } catch (error) {
       console.error("Failed to load orders:", error);
       toast.error("Không thể tải danh sách đơn hàng.");
       setOrders([]);
+      setAllOrders([]);
     } finally {
       setLoading(false);
     }
@@ -191,17 +199,17 @@ const AdminOrders = () => {
               <div className="col-md-4">
                 <label className="form-label">
                   <i className="bi bi-search me-1"></i>
-                  Tìm theo mã đơn hàng
+                  Tìm kiếm đơn hàng
                 </label>
                 <input
                   type="text"
                   className="form-control"
-                  placeholder="Nhập mã đơn hàng..."
+                  placeholder="Mã đơn hàng, tên hoặc SĐT khách hàng..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
                 <small className="text-muted">
-                  Nhập chính xác mã đơn hàng để tìm kiếm
+                  Tìm theo mã đơn, tên khách hàng hoặc số điện thoại
                 </small>
               </div>
               <div className="col-md-3">

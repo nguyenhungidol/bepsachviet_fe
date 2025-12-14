@@ -10,6 +10,7 @@ import {
 import { toast } from "react-toastify";
 import { useAuth } from "./AuthContext";
 import { getStoredToken } from "../services/userService";
+import { validateCartItems } from "../services/productService";
 import {
   // Local storage functions
   getLocalCart,
@@ -60,6 +61,8 @@ export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState({ items: [], totalItems: 0, totalPrice: 0 });
   const [loading, setLoading] = useState(false);
   const [syncing, setSyncing] = useState(false);
+  const [validating, setValidating] = useState(false);
+  const [invalidItems, setInvalidItems] = useState([]); // Items that are inactive/unavailable
 
   // Track previous auth state to detect login
   const prevAuthRef = useRef(isAuthenticated);
@@ -169,6 +172,12 @@ export const CartProvider = ({ children }) => {
   // Add item to cart
   const addItem = useCallback(
     async (product, quantity = 1) => {
+      // Check if product is active (not soft deleted)
+      if (product.isActive === false || product.active === false) {
+        toast.error(`Sản phẩm "${product.name}" không còn kinh doanh!`);
+        return;
+      }
+
       // Check stock quantity before adding
       const stockQuantity = product.stockQuantity;
       if (
@@ -351,6 +360,71 @@ export const CartProvider = ({ children }) => {
     }
   }, [isAuthenticated]);
 
+  // Validate cart items against current product status
+  const validateCart = useCallback(async () => {
+    if (cart.items.length === 0) {
+      setInvalidItems([]);
+      return { valid: [], invalid: [], hasInvalidItems: false };
+    }
+
+    setValidating(true);
+    try {
+      const { valid, invalid } = await validateCartItems(cart.items);
+      setInvalidItems(invalid);
+
+      if (invalid.length > 0) {
+        const inactiveCount = invalid.filter(
+          (i) => i.reason === "INACTIVE" || i.reason === "NOT_FOUND"
+        ).length;
+        const outOfStockCount = invalid.filter(
+          (i) => i.reason === "OUT_OF_STOCK"
+        ).length;
+        const insufficientCount = invalid.filter(
+          (i) => i.reason === "INSUFFICIENT_STOCK"
+        ).length;
+
+        if (inactiveCount > 0) {
+          toast.warning(`${inactiveCount} sản phẩm không còn kinh doanh.`);
+        }
+        if (outOfStockCount > 0) {
+          toast.warning(`${outOfStockCount} sản phẩm đã hết hàng.`);
+        }
+        if (insufficientCount > 0) {
+          toast.warning(`${insufficientCount} sản phẩm không đủ số lượng.`);
+        }
+      }
+
+      return { valid, invalid, hasInvalidItems: invalid.length > 0 };
+    } catch (error) {
+      console.error("Failed to validate cart", error);
+      return { valid: cart.items, invalid: [], hasInvalidItems: false };
+    } finally {
+      setValidating(false);
+    }
+  }, [cart.items]);
+
+  // Check if an item is invalid
+  const isItemInvalid = useCallback(
+    (itemId) => {
+      const productId = itemId;
+      return invalidItems.some(
+        (item) => (item.productId || item.id) === productId
+      );
+    },
+    [invalidItems]
+  );
+
+  // Get invalid item info
+  const getInvalidItemInfo = useCallback(
+    (itemId) => {
+      const productId = itemId;
+      return invalidItems.find(
+        (item) => (item.productId || item.id) === productId
+      );
+    },
+    [invalidItems]
+  );
+
   // Load cart on mount and when auth changes
   useEffect(() => {
     const justLoggedIn = !prevAuthRef.current && isAuthenticated;
@@ -375,22 +449,32 @@ export const CartProvider = ({ children }) => {
       totalPrice: cart.totalPrice,
       loading,
       syncing,
+      validating,
+      invalidItems,
       addItem,
       updateItem,
       removeItem,
       clearAllItems,
       refreshCart: loadCart,
+      validateCart,
+      isItemInvalid,
+      getInvalidItemInfo,
       formatPrice,
     }),
     [
       cart,
       loading,
       syncing,
+      validating,
+      invalidItems,
       addItem,
       updateItem,
       removeItem,
       clearAllItems,
       loadCart,
+      validateCart,
+      isItemInvalid,
+      getInvalidItemInfo,
       formatPrice,
     ]
   );

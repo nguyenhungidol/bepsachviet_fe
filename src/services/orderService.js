@@ -14,8 +14,6 @@ const withAuth = ({ method = "GET", data, signal } = {}) => {
     console.warn("No auth token found for order request!");
   }
 
-  console.log("Order API request:", { method, hasToken: !!token, data });
-
   return {
     method,
     signal,
@@ -104,7 +102,7 @@ export const fetchAdminOrders = async ({
 };
 
 /**
- * GET /admin/orders/{orderId} - Get order details (admin)
+ * GET /orders/{orderId} - Get order details (admin)
  * @param {string} orderId - Order ID
  * @param {Object} [options]
  * @param {AbortSignal} [options.signal] - Abort signal
@@ -113,7 +111,7 @@ export const fetchAdminOrderById = async (orderId, { signal } = {}) => {
   if (!orderId) {
     throw new Error("Thiếu mã đơn hàng");
   }
-  return apiRequest(`/admin/orders/${orderId}`, withAuth({ signal }));
+  return apiRequest(`/orders/${orderId}`, withAuth({ signal }));
 };
 
 /**
