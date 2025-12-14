@@ -302,6 +302,15 @@ function ProductDetail() {
 
             {!loading && product && (
               <>
+                {/* Inactive product warning */}
+                {(product.isActive === false || product.active === false) && (
+                  <div className="alert alert-warning mb-4">
+                    <i className="bi bi-exclamation-triangle me-2"></i>
+                    <strong>Sản phẩm không còn kinh doanh.</strong> Sản phẩm này
+                    hiện không khả dụng để mua.
+                  </div>
+                )}
+
                 {/* --- PRODUCT TOP SECTION --- */}
                 <div className="product-main-section">
                   <Row>
@@ -425,9 +434,23 @@ function ProductDetail() {
                         </div>
 
                         <div className="product-actions">
-                          {product.stockQuantity !== null &&
-                          product.stockQuantity !== undefined &&
-                          product.stockQuantity <= 0 ? (
+                          {/* Check if product is inactive (soft deleted) */}
+                          {product.isActive === false ||
+                          product.active === false ? (
+                            <button
+                              type="button"
+                              className="btn-add-cart"
+                              style={{
+                                background: "#6c757d",
+                                cursor: "not-allowed",
+                              }}
+                              disabled
+                            >
+                              Ngưng kinh doanh
+                            </button>
+                          ) : product.stockQuantity !== null &&
+                            product.stockQuantity !== undefined &&
+                            product.stockQuantity <= 0 ? (
                             <button
                               type="button"
                               className="btn-add-cart"

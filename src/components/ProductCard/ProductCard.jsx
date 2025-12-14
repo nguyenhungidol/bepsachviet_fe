@@ -34,6 +34,9 @@ const ProductCard = ({ product, imageSrc, name, price, ocUrl }) => {
   const rawPrice = resolvedProduct.price;
   const stockQuantity = resolvedProduct.stockQuantity ?? null;
   const isOutOfStock = stockQuantity !== null && stockQuantity <= 0;
+  const isInactive =
+    resolvedProduct.isActive === false || resolvedProduct.active === false;
+  const isUnavailable = isOutOfStock || isInactive;
 
   const productLink = `/san-pham/${
     resolvedProduct.productId || resolvedProduct.id || "unknown"
@@ -44,6 +47,11 @@ const ProductCard = ({ product, imageSrc, name, price, ocUrl }) => {
     e.stopPropagation();
     addItem(resolvedProduct, 1);
   };
+
+  // Don't render inactive products on public pages
+  if (isInactive) {
+    return null;
+  }
 
   return (
     <Link to={productLink} className="product-card-link">
@@ -61,7 +69,7 @@ const ProductCard = ({ product, imageSrc, name, price, ocUrl }) => {
           {/* Out of stock badge */}
           {isOutOfStock && <div className="out-of-stock-badge">Hết hàng</div>}
           {/* Add to cart button overlay */}
-          {rawPrice > 0 && !isOutOfStock && (
+          {rawPrice > 0 && !isUnavailable && (
             <button
               type="button"
               className="btn-quick-add"

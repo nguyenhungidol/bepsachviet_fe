@@ -763,8 +763,10 @@ const AdminPosts = () => {
               <table className="table align-middle">
                 <thead className="bg-light">
                   <tr>
-                    {/* Thay width 40% bằng min-width để đảm bảo không bị quá nhỏ trên mobile */}
-                    <th style={{ minWidth: "300px" }}>Bài viết</th>
+                    {/* Fixed width for post column to prevent overflow */}
+                    <th style={{ width: "40%", maxWidth: "350px" }}>
+                      Bài viết
+                    </th>
 
                     {/* Thêm text-nowrap để không bị xuống dòng */}
                     <th className="text-nowrap">Tác giả</th>
@@ -780,7 +782,7 @@ const AdminPosts = () => {
 
                     return (
                       <tr key={postId}>
-                        <td>
+                        <td style={{ maxWidth: "350px" }}>
                           <div className="d-flex align-items-center gap-3">
                             {/* Phần ảnh thumbnail giữ nguyên */}
                             {post.thumbnailUrl ? (
@@ -802,10 +804,23 @@ const AdminPosts = () => {
                             )}
 
                             {/* Phần tiêu đề và mô tả */}
-                            <div style={{ minWidth: 0 }}>
+                            <div
+                              style={{
+                                minWidth: 0,
+                                flex: 1,
+                                overflow: "hidden",
+                              }}
+                            >
                               {" "}
                               {/* minWidth 0 giúp text-truncate hoạt động trong flex */}
-                              <p className="mb-0 fw-semibold text-truncate">
+                              <p
+                                className="mb-0 fw-semibold"
+                                style={{
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  whiteSpace: "nowrap",
+                                }}
+                              >
                                 {post.title}
                                 {post.isFeatured && (
                                   <span
@@ -816,7 +831,18 @@ const AdminPosts = () => {
                                   </span>
                                 )}
                               </p>
-                              <small className="text-muted text-truncate d-block">
+                              <small
+                                className="text-muted d-block"
+                                style={{
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  whiteSpace: "nowrap",
+                                  maxWidth: "100%",
+                                }}
+                                title={
+                                  post.shortDescription || "Không có mô tả"
+                                }
+                              >
                                 {post.shortDescription || "Không có mô tả"}
                               </small>
                             </div>

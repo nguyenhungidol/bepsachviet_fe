@@ -148,6 +148,11 @@ const normalizeProduct = (product) => {
     isBestSeller:
       product.bestSeller ?? product.isBestSeller ?? hasTag("BEST") ?? false,
     isNew: product.isNew ?? product.newProduct ?? hasTag("NEW") ?? false,
+    // Soft delete: product is active by default, unless explicitly set to false
+    isActive:
+      product.active !== false &&
+      product.isActive !== false &&
+      !product.deletedAt,
   };
 
   return normalized;
@@ -157,6 +162,15 @@ export const fetchProducts = async ({ signal, search } = {}) => {
   const query = buildQueryString({ search });
   const data = await apiRequest(`/products${query}`, { signal });
   return normalizeList(data).map(normalizeProduct).filter(Boolean);
+};
+
+// Fetch only active products (for public pages)
+export const fetchActiveProducts = async ({ signal, search } = {}) => {
+  const query = buildQueryString({ search });
+  const data = await apiRequest(`/products${query}`, { signal });
+  return normalizeList(data)
+    .map(normalizeProduct)
+    .filter((product) => product && product.isActive);
 };
 
 export const fetchProductById = async (productId, { signal } = {}) => {
@@ -181,10 +195,78 @@ export const fetchProductsByCategory = async (categoryId, { signal } = {}) => {
   return normalizeList(data).map(normalizeProduct).filter(Boolean);
 };
 
+// Check if a product is available (active and in stock)
+export const isProductAvailable = (product) => {
+  if (!product) return false;
+  // Check if product is active (not soft deleted)
+  if (product.isActive === false || product.active === false) return false;
+  // Check stock (null means no stock tracking, so it's available)
+  if (
+    product.stockQuantity !== null &&
+    product.stockQuantity !== undefined &&
+    product.stockQuantity <= 0
+  )
+    return false;
+  return true;
+};
+
+// Validate cart items against current product status
+export const validateCartItems = async (cartItems) => {
+  if (!cartItems || cartItems.length === 0) return { valid: [], invalid: [] };
+
+  const validItems = [];
+  const invalidItems = [];
+
+  for (const item of cartItems) {
+    try {
+      const productId = item.productId || item.id;
+      const product = await fetchProductById(productId);
+
+      if (!product || !product.isActive) {
+        invalidItems.push({
+          ...item,
+          reason: "INACTIVE",
+          message: "Sản phẩm không còn kinh doanh",
+        });
+      } else if (product.stockQuantity !== null && product.stockQuantity <= 0) {
+        invalidItems.push({
+          ...item,
+          reason: "OUT_OF_STOCK",
+          message: "Sản phẩm đã hết hàng",
+        });
+      } else if (
+        product.stockQuantity !== null &&
+        item.quantity > product.stockQuantity
+      ) {
+        invalidItems.push({
+          ...item,
+          reason: "INSUFFICIENT_STOCK",
+          message: `Chỉ còn ${product.stockQuantity} sản phẩm`,
+          availableQuantity: product.stockQuantity,
+        });
+      } else {
+        validItems.push({ ...item, product });
+      }
+    } catch {
+      // Product not found - treat as inactive
+      invalidItems.push({
+        ...item,
+        reason: "NOT_FOUND",
+        message: "Sản phẩm không tồn tại",
+      });
+    }
+  }
+
+  return { valid: validItems, invalid: invalidItems };
+};
+
 const productService = {
   fetchProducts,
+  fetchActiveProducts,
   fetchProductById,
   fetchProductsByCategory,
+  isProductAvailable,
+  validateCartItems,
 };
 
 export default productService;

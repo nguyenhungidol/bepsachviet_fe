@@ -9,9 +9,11 @@
 }
 
 .floating-btn {
-  width: 60px;
-  height: 60px;
+  position: relative;
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -26,6 +28,46 @@
   transform: scale(1.1) translateY(-3px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
   animation: none;
+}
+
+/* Support/Consultant Button - Red/Orange gradient */
+.support-btn {
+  background: linear-gradient(135deg, #e53935, #ff5722);
+  order: -1; /* Move to top */
+}
+
+.support-btn:hover {
+  background: linear-gradient(135deg, #c62828, #e64a19);
+}
+
+/* Badge for unread messages */
+.floating-btn__badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 22px;
+  height: 22px;
+  background: #ff5722;
+  border-radius: 11px;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  animation: bounce-badge 0.3s ease;
+}
+
+@keyframes bounce-badge {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
 }
 
 .zalo-btn {
@@ -71,7 +113,7 @@
 @media (max-width: 768px) {
   .floating-buttons {
     right: 15px;
-    bottom: 15px;
+    bottom: 150px; /* Adjusted for chat button */
     gap: 10px;
   }
 
@@ -83,13 +125,15 @@
   .floating-btn svg {
     width: 32px;
     height: 32px;
+    display: block;
+    margin: auto;
   }
 }
 
 @media (max-width: 576px) {
   .floating-buttons {
     right: 10px;
-    bottom: 10px;
+    bottom: 140px; /* Adjusted for chat button */
   }
 
   .floating-btn {

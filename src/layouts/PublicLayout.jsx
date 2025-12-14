@@ -4,6 +4,7 @@ import Header from "../components/Header/Header";
 import MainNav from "../components/MainNav/MainNav";
 import Footer from "../components/Footer/Footer";
 import FloatingButtons from "../components/FloatingButtons/FloatingButtons";
+import FloatingChat from "../components/Chat/FloatingChat";
 
 const PublicLayout = () => (
   <div className="App">
@@ -12,6 +13,7 @@ const PublicLayout = () => (
     <MainNav />
     <Outlet />
     <FloatingButtons />
+    <FloatingChat />
     <Footer />
   </div>
 );

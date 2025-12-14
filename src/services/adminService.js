@@ -65,7 +65,7 @@ export const deleteAdminCategory = (categoryId) => {
 };
 
 export const fetchAdminProducts = ({ signal } = {}) =>
-  adminGet("/products", { signal });
+  adminGet("/admin/products", { signal });
 
 export const createAdminProduct = (payload) =>
   adminMutation("/admin/products", { method: "POST", data: payload });
@@ -81,6 +81,33 @@ export const updateAdminProduct = (productId, payload) => {
 };
 
 export const deleteAdminProduct = (productId) => {
+  if (!productId) {
+    return rejectWithToast("Thiếu mã sản phẩm.");
+  }
+  return adminMutation(`/admin/products/${productId}`, {
+    method: "DELETE", 
+  });
+};
+
+// Restore a soft-deleted product
+export const restoreAdminProduct = (productId, productData = {}) => {
+  if (!productId) {
+    return rejectWithToast("Thiếu mã sản phẩm.");
+  }
+  // Restore: Set isActive = true with required product data
+  return adminMutation(`/admin/products/${productId}`, {
+    method: "PUT",
+    data: {
+      ...productData,
+      productId: productData.productId || productId,
+      isActive: true,
+      active: true, // Include both for compatibility
+    },
+  });
+};
+
+// Hard delete (for admin use only if needed)
+export const hardDeleteAdminProduct = (productId) => {
   if (!productId) {
     return rejectWithToast("Thiếu mã sản phẩm.");
   }
@@ -145,6 +172,8 @@ const adminService = {
   createAdminProduct,
   updateAdminProduct,
   deleteAdminProduct,
+  restoreAdminProduct,
+  hardDeleteAdminProduct,
   fetchAdminPosts,
   createAdminPost,
   updateAdminPost,

@@ -276,52 +276,60 @@ const AdminMarketingPlan = () => {
                 value={searchQuery}
                 onChange={(e) => handleSearch(e.target.value)}
                 onFocus={() => searchQuery && setShowSearchResults(true)}
+                onBlur={() =>
+                  setTimeout(() => setShowSearchResults(false), 200)
+                }
               />
               {loadingProducts && (
                 <span className="search-loading">
                   <i className="bi bi-arrow-repeat spin"></i>
                 </span>
               )}
-            </div>
 
-            {/* Search Results Dropdown */}
-            {showSearchResults && searchResults.length > 0 && (
-              <div className="search-results">
-                {searchResults.map((product) => (
-                  <div
-                    key={product.productId || product.id}
-                    className="search-result-item"
-                    onClick={() => addProductToPlan(product)}
-                  >
-                    <img
-                      src={product.imageSrc || FALLBACK_IMAGE}
-                      alt={product.name}
-                      className="search-result-image"
-                      onError={(e) => {
-                        e.target.src = FALLBACK_IMAGE;
-                      }}
-                    />
-                    <div className="search-result-info">
-                      <span className="search-result-name">{product.name}</span>
-                      <span className="search-result-code">
-                        Mã: {product.productId || product.id}
+              {/* Search Results Dropdown - inside wrapper for proper positioning */}
+              {showSearchResults && searchResults.length > 0 && (
+                <div className="search-results">
+                  {searchResults.map((product) => (
+                    <div
+                      key={product.productId || product.id}
+                      className="search-result-item"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => addProductToPlan(product)}
+                    >
+                      <img
+                        src={product.imageSrc || FALLBACK_IMAGE}
+                        alt={product.name}
+                        className="search-result-image"
+                        onError={(e) => {
+                          e.target.src = FALLBACK_IMAGE;
+                        }}
+                      />
+                      <div className="search-result-info">
+                        <span className="search-result-name">
+                          {product.name}
+                        </span>
+                        <span className="search-result-code">
+                          Mã: {product.productId || product.id}
+                        </span>
+                      </div>
+                      <span className="search-result-price">
+                        {formatPrice(product.price)}
                       </span>
                     </div>
-                    <span className="search-result-price">
-                      {formatPrice(product.price)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {showSearchResults && searchQuery && searchResults.length === 0 && (
-              <div className="search-results">
-                <div className="search-no-result">
-                  Không tìm thấy sản phẩm phù hợp
+                  ))}
                 </div>
-              </div>
-            )}
+              )}
+
+              {showSearchResults &&
+                searchQuery &&
+                searchResults.length === 0 && (
+                  <div className="search-results">
+                    <div className="search-no-result">
+                      Không tìm thấy sản phẩm phù hợp
+                    </div>
+                  </div>
+                )}
+            </div>
           </div>
 
           {/* Create Plan Button */}
