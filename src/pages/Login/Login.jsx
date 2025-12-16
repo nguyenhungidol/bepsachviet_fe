@@ -137,7 +137,22 @@ const Login = () => {
       }, 1000);
     } catch (error) {
       console.error("Login error:", error);
-      toast.error("Đăng nhập thất bại. Vui lòng thử lại.");
+
+      const errorMessage = error?.message?.toLowerCase() || "";
+
+      // Check if account is locked - only by message content, not status code
+      if (
+        errorMessage.includes("locked") ||
+        errorMessage.includes("khóa") ||
+        errorMessage.includes("bị khóa") ||
+        errorMessage.includes("account is locked") ||
+        errorMessage.includes("tài khoản đã bị khóa")
+      ) {
+        toast.error("Tài khoản của bạn đã bị khóa!");
+      } else {
+        // All other errors (wrong password, wrong email, etc.)
+        toast.error("Email hoặc mật khẩu không đúng!");
+      }
     } finally {
       setLoading(false);
     }

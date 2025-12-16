@@ -39,6 +39,23 @@ export const deleteAdminUser = (userId) => {
   return adminMutation(`/admin/users/${userId}`, { method: "DELETE" });
 };
 
+export const lockAdminUser = (userId, reason = "") => {
+  if (!userId) {
+    return rejectWithToast("Thiếu mã người dùng.");
+  }
+  return adminMutation(`/admin/users/${userId}/lock`, {
+    method: "POST",
+    data: { reason },
+  });
+};
+
+export const unlockAdminUser = (userId) => {
+  if (!userId) {
+    return rejectWithToast("Thiếu mã người dùng.");
+  }
+  return adminMutation(`/admin/users/${userId}/unlock`, { method: "POST" });
+};
+
 export const fetchAdminCategories = ({ signal } = {}) =>
   adminGet("/categories", { signal });
 
@@ -85,7 +102,7 @@ export const deleteAdminProduct = (productId) => {
     return rejectWithToast("Thiếu mã sản phẩm.");
   }
   return adminMutation(`/admin/products/${productId}`, {
-    method: "DELETE", 
+    method: "DELETE",
   });
 };
 
