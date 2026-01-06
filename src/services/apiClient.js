@@ -1,7 +1,7 @@
 const API_BASE_URL =
   (import.meta?.env?.VITE_API_BASE_URL &&
     import.meta.env.VITE_API_BASE_URL.replace(/\/$/, "")) ||
-  "http://localhost:8080/api/v1.0";
+  "https://bepsachviet-be.onrender.com/api/v1.0";
 
 const isJsonResponse = (response) => {
   const contentType = response.headers.get("content-type");
