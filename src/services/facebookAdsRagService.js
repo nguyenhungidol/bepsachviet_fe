@@ -3,7 +3,7 @@ export const generateFacebookAds = async ({
   productName,
   image,
 }) => {
-  const res = await fetch("http://localhost:8000/api/facebook-ads/generate", {
+  const res = await fetch("https://ai-marketing-rfia.onrender.com/api/facebook-ads/generate", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
