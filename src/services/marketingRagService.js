@@ -1,5 +1,5 @@
 export const generateMarketingPlanByRAG = async (productName) => {
-  const res = await fetch("http://localhost:4000/generate-marketing-plan", {
+  const res = await fetch("https://ai-marketing-rfia.onrender.com/generate-marketing-plan", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
