@@ -78,6 +78,14 @@
 }
 
 /* Cart Offcanvas Styles */
+.cart-offcanvas {
+  z-index: 1300;
+}
+
+.offcanvas-backdrop {
+  z-index: 1290;
+}
+
 .cart-items {
   max-height: calc(100vh - 280px);
 }

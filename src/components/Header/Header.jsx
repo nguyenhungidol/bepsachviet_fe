@@ -174,7 +174,12 @@ function Header() {
       </Container>
 
       {/* Cart Offcanvas/Sidebar */}
-      <Offcanvas show={showCart} onHide={handleCloseCart} placement="end">
+      <Offcanvas
+        show={showCart}
+        onHide={handleCloseCart}
+        placement="end"
+        className="cart-offcanvas"
+      >
         <Offcanvas.Header closeButton>
           <Offcanvas.Title>
             <i className="bi bi-cart3 me-2"></i>

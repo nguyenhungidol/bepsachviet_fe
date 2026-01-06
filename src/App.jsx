@@ -34,6 +34,7 @@ import AdminPosts from "./pages/Admin/AdminPosts";
 import AdminUsers from "./pages/Admin/AdminUsers";
 import AdminOrders from "./pages/Admin/AdminOrders";
 import AdminMarketingPlan from "./pages/Admin/AdminMarketingPlan";
+import AdminMarketingPost from "./pages/Admin/AdminMarketingPost";
 import AdminChat from "./pages/Admin/AdminChat";
 
 function App() {
@@ -94,6 +95,10 @@ function App() {
                   <Route path="orders" element={<AdminOrders />} />
                   <Route path="chat" element={<AdminChat />} />
                   <Route path="marketing" element={<AdminMarketingPlan />} />
+                  <Route
+                    path="marketing-posts"
+                    element={<AdminMarketingPost />}
+                  />
                   <Route path="posts" element={<AdminPosts />} />
                   <Route path="users" element={<AdminUsers />} />
                 </Route>
