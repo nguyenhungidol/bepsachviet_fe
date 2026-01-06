@@ -2,6 +2,9 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { fetchAdminProducts } from "../../services/adminService";
 import "./AdminMarketingPlan.css";
+import { generateMarketingPlanByRAG } from "../../services/marketingRagService";
+import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
 
 const FALLBACK_IMAGE = "https://via.placeholder.com/60x60?text=No+Image";
 
@@ -114,7 +117,7 @@ const AdminMarketingPlan = () => {
         products: [...prev.products, product],
       };
     });
-    setSearchQuery("");
+    setSearchQuery(product.name);
     setSearchResults([]);
     setShowSearchResults(false);
   }, []);
@@ -130,19 +133,78 @@ const AdminMarketingPlan = () => {
   }, []);
 
   // Create new plan
-  const handleCreatePlan = useCallback(() => {
-    setIsCreating(true);
-    setIsEditing(false);
-    setSelectedPlan(null);
-    setPlanForm({
-      name: "",
-      description: "",
-      startDate: "",
-      endDate: "",
-      discountPercent: "",
-      products: [],
-    });
-  }, []);
+  const handleCreatePlan = useCallback(async () => {
+    if (!searchQuery.trim()) {
+      toast.warning("Vui lòng nhập tên hoặc mã sản phẩm trước!");
+      return;
+    }
+
+    try {
+      toast.info("Đang tạo kế hoạch marketing bằng AI...");
+      setIsCreating(true);
+
+      const ragResult = await generateMarketingPlanByRAG(searchQuery.trim());
+
+      const relatedProduct = products.find(
+        (p) =>
+          (p.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (p.productId || p.id || "")
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())
+      );
+
+      let finalDescription = ragResult.answer;
+
+      if (relatedProduct) {
+        const imageUrl =
+          typeof relatedProduct.imageSrc === "string"
+            ? relatedProduct.imageSrc
+            : FALLBACK_IMAGE;
+
+        //   finalDescription += `
+
+        // ---
+
+        // ### Sản phẩm liên quan
+
+        // **${relatedProduct.name}**
+        // Giá: ${formatPrice(relatedProduct.price)}
+
+        // <img src="${imageUrl}" alt="${relatedProduct.name}" style="max-width:200px;border-radius:8px;margin-top:8px;" />
+        // `;
+        finalDescription += `
+
+---
+
+### Sản phẩm liên quan
+
+
+`;
+      }
+
+      const newPlan = {
+        id: Date.now().toString(),
+        name: `Kế hoạch marketing: ${searchQuery.trim()}`,
+        description: finalDescription, // 🔥 AI GENERATED
+        startDate: "",
+        endDate: "",
+        discountPercent: null,
+        products: relatedProduct ? [relatedProduct] : [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      setPlans((prev) => [...prev, newPlan]);
+      setSelectedPlan(newPlan);
+
+      toast.success("AI đã tạo kế hoạch marketing!");
+    } catch (err) {
+      console.error("RAG ERROR DETAIL:", err);
+      toast.error("Không thể tạo kế hoạch marketing bằng AI");
+    } finally {
+      setIsCreating(false);
+    }
+  }, [searchQuery]);
 
   // Edit existing plan
   const handleEditPlan = useCallback((plan) => {
@@ -276,60 +338,52 @@ const AdminMarketingPlan = () => {
                 value={searchQuery}
                 onChange={(e) => handleSearch(e.target.value)}
                 onFocus={() => searchQuery && setShowSearchResults(true)}
-                onBlur={() =>
-                  setTimeout(() => setShowSearchResults(false), 200)
-                }
               />
               {loadingProducts && (
                 <span className="search-loading">
                   <i className="bi bi-arrow-repeat spin"></i>
                 </span>
               )}
+            </div>
 
-              {/* Search Results Dropdown - inside wrapper for proper positioning */}
-              {showSearchResults && searchResults.length > 0 && (
-                <div className="search-results">
-                  {searchResults.map((product) => (
-                    <div
-                      key={product.productId || product.id}
-                      className="search-result-item"
-                      onMouseDown={(e) => e.preventDefault()}
-                      onClick={() => addProductToPlan(product)}
-                    >
-                      <img
-                        src={product.imageSrc || FALLBACK_IMAGE}
-                        alt={product.name}
-                        className="search-result-image"
-                        onError={(e) => {
-                          e.target.src = FALLBACK_IMAGE;
-                        }}
-                      />
-                      <div className="search-result-info">
-                        <span className="search-result-name">
-                          {product.name}
-                        </span>
-                        <span className="search-result-code">
-                          Mã: {product.productId || product.id}
-                        </span>
-                      </div>
-                      <span className="search-result-price">
-                        {formatPrice(product.price)}
+            {/* Search Results Dropdown */}
+            {showSearchResults && searchResults.length > 0 && (
+              <div className="search-results">
+                {searchResults.map((product) => (
+                  <div
+                    key={product.productId || product.id}
+                    className="search-result-item"
+                    onClick={() => addProductToPlan(product)}
+                  >
+                    <img
+                      src={product.imageSrc || FALLBACK_IMAGE}
+                      alt={product.name}
+                      className="search-result-image"
+                      onError={(e) => {
+                        e.target.src = FALLBACK_IMAGE;
+                      }}
+                    />
+                    <div className="search-result-info">
+                      <span className="search-result-name">{product.name}</span>
+                      <span className="search-result-code">
+                        Mã: {product.productId || product.id}
                       </span>
                     </div>
-                  ))}
-                </div>
-              )}
-
-              {showSearchResults &&
-                searchQuery &&
-                searchResults.length === 0 && (
-                  <div className="search-results">
-                    <div className="search-no-result">
-                      Không tìm thấy sản phẩm phù hợp
-                    </div>
+                    <span className="search-result-price">
+                      {formatPrice(product.price)}
+                    </span>
                   </div>
-                )}
-            </div>
+                ))}
+              </div>
+            )}
+
+            {showSearchResults && searchQuery && searchResults.length === 0 && (
+              <div className="search-results">
+                <div className="search-no-result">
+                  Không tìm thấy sản phẩm phù hợp
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Create Plan Button */}
@@ -563,7 +617,14 @@ const AdminMarketingPlan = () => {
               </div>
 
               {selectedPlan.description && (
-                <p className="plan-description">{selectedPlan.description}</p>
+                <div className="plan-description markdown-content">
+                  {/* <ReactMarkdown>
+                    {selectedPlan.description}
+                  </ReactMarkdown> */}
+                  <ReactMarkdown rehypePlugins={[rehypeRaw]}>
+                    {selectedPlan.description}
+                  </ReactMarkdown>
+                </div>
               )}
 
               <div className="plan-meta">

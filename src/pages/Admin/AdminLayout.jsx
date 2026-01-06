@@ -13,6 +13,7 @@ const adminNavItems = [
   { path: "/admin/orders", label: "Quản lý đơn hàng" },
   { path: "/admin/chat", label: "Hỗ trợ khách hàng" },
   { path: "/admin/marketing", label: "Kế hoạch Marketing" },
+  { path: "/admin/marketing-posts", label: "Bài đăng MXH" },
   { path: "/admin/posts", label: "Quản lý bài viết" },
   { path: "/admin/users", label: "Quản lý người dùng" },
 ];

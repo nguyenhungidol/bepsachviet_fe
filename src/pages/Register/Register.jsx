@@ -56,6 +56,47 @@ const Register = () => {
     return newErrors;
   };
 
+  const getRegisterErrorMessage = (error) => {
+    const duplicateEmailMessage = "Email đã tồn tại trong hệ thống.";
+    const fallbackMessage = "Đăng ký thất bại (không có chi tiết lỗi).";
+
+    if (!error) return fallbackMessage;
+
+    const dataMessage =
+      typeof error.data === "string"
+        ? error.data.trim()
+        : error.data?.message || error.data?.error || "";
+    const rawMessage = dataMessage || error.message || "";
+    const normalized = rawMessage.toLowerCase();
+
+    if (error.status === 409) {
+      return rawMessage && rawMessage !== "Request failed"
+        ? rawMessage
+        : duplicateEmailMessage;
+    }
+
+    if (
+      normalized.includes("email") &&
+      (normalized.includes("exist") ||
+        normalized.includes("exists") ||
+        normalized.includes("already") ||
+        normalized.includes("duplicate") ||
+        normalized.includes("tồn tại"))
+    ) {
+      return rawMessage || duplicateEmailMessage;
+    }
+
+    if (rawMessage && rawMessage !== "Request failed") {
+      return rawMessage;
+    }
+
+    if (error.status) {
+      return `Đăng ký thất bại (HTTP ${error.status}).`;
+    }
+
+    return fallbackMessage;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setApiError("");
@@ -83,7 +124,7 @@ const Register = () => {
       }, 1200);
     } catch (error) {
       console.error("Register error:", error);
-      setApiError(error.message || "Đăng ký thất bại. Vui lòng thử lại.");
+      setApiError(getRegisterErrorMessage(error));
     } finally {
       setLoading(false);
     }
