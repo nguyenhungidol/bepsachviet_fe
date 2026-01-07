@@ -49,6 +49,8 @@ const AdminProducts = () => {
   const [restoringIds, setRestoringIds] = useState({});
   const [uploading, setUploading] = useState(false);
   const [showInactive, setShowInactive] = useState(false); // Filter for inactive products
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const normalizedProducts = useMemo(
     () => (Array.isArray(products) ? products : products?.content || []),
@@ -65,6 +67,22 @@ const AdminProducts = () => {
       (p) => p.active !== false && p.isActive !== false
     );
   }, [normalizedProducts, showInactive]);
+
+  // Reset to page 1 when filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [showInactive]);
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentProducts = filteredProducts.slice(startIndex, endIndex);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const normalizedCategories = useMemo(
     () => (Array.isArray(categories) ? categories : categories?.content || []),
@@ -557,7 +575,9 @@ const AdminProducts = () => {
               </label>
             </div>
             <small className="text-muted">
-              ({filteredProducts.length} / {normalizedProducts.length} sản phẩm)
+              (Hiển thị {currentProducts.length > 0 ? startIndex + 1 : 0}-
+              {Math.min(endIndex, filteredProducts.length)} /{" "}
+              {filteredProducts.length} sản phẩm)
             </small>
           </div>
 
@@ -572,140 +592,208 @@ const AdminProducts = () => {
               </p>
             </div>
           ) : (
-            <div className="table-responsive">
-              <table className="table align-middle">
-                <thead>
-                  <tr>
-                    <th>Sản phẩm</th>
-                    <th>Danh mục</th>
-                    <th>Giá</th>
-                    <th>Tồn kho</th>
-                    <th>Trạng thái</th>
-                    <th className="text-end">Hành động</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredProducts.map((product) => {
-                    const productId = product.productId || product.id;
-                    const categoryMatch = normalizedCategories.find(
-                      (category) =>
-                        (category.categoryId || category.id) ===
-                        (product.categoryId || product.category?.id)
-                    );
-                    const categoryName =
-                      product.category?.name || categoryMatch?.name || "—";
-                    const categoryInactive = categoryMatch?.active === false;
-                    // Check both 'active' and 'isActive' for compatibility with backend
-                    const isActive =
-                      typeof product.isActive === "boolean"
-                        ? product.isActive
-                        : typeof product.active === "boolean"
-                        ? product.active
-                        : product.status
-                        ? product.status.toUpperCase() === "ACTIVE"
-                        : true;
-                    const productImage =
-                      product.imageSrc || product.imageUrl || product.thumbnail;
-                    return (
-                      <tr key={productId}>
-                        <td>
-                          <div className="d-flex align-items-center gap-3">
-                            {productImage ? (
-                              <img
-                                src={productImage}
-                                alt={product.name}
-                                width="48"
-                                height="48"
-                                className="rounded"
-                                style={{ objectFit: "cover" }}
-                              />
-                            ) : (
-                              <div
-                                className="bg-light rounded"
-                                style={{ width: 48, height: 48 }}
-                              />
-                            )}
-                            <div>
-                              <p className="mb-0 fw-semibold">{product.name}</p>
-                              <small
-                                className="text-muted text-truncate d-block"
-                                style={{ maxWidth: 220 }}
-                              >
-                                {product.description || "Không có mô tả"}
-                              </small>
+            <>
+              <div className="table-responsive">
+                <table className="table align-middle">
+                  <thead>
+                    <tr>
+                      <th>Sản phẩm</th>
+                      <th>Danh mục</th>
+                      <th>Giá</th>
+                      <th>Tồn kho</th>
+                      <th>Trạng thái</th>
+                      <th className="text-end">Hành động</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {currentProducts.map((product) => {
+                      const productId = product.productId || product.id;
+                      const categoryMatch = normalizedCategories.find(
+                        (category) =>
+                          (category.categoryId || category.id) ===
+                          (product.categoryId || product.category?.id)
+                      );
+                      const categoryName =
+                        product.category?.name || categoryMatch?.name || "—";
+                      const categoryInactive = categoryMatch?.active === false;
+                      // Check both 'active' and 'isActive' for compatibility with backend
+                      const isActive =
+                        typeof product.isActive === "boolean"
+                          ? product.isActive
+                          : typeof product.active === "boolean"
+                          ? product.active
+                          : product.status
+                          ? product.status.toUpperCase() === "ACTIVE"
+                          : true;
+                      const productImage =
+                        product.imageSrc ||
+                        product.imageUrl ||
+                        product.thumbnail;
+                      return (
+                        <tr key={productId}>
+                          <td>
+                            <div className="d-flex align-items-center gap-3">
+                              {productImage ? (
+                                <img
+                                  src={productImage}
+                                  alt={product.name}
+                                  width="48"
+                                  height="48"
+                                  className="rounded"
+                                  style={{ objectFit: "cover" }}
+                                />
+                              ) : (
+                                <div
+                                  className="bg-light rounded"
+                                  style={{ width: 48, height: 48 }}
+                                />
+                              )}
+                              <div>
+                                <p className="mb-0 fw-semibold">
+                                  {product.name}
+                                </p>
+                                <small
+                                  className="text-muted text-truncate d-block"
+                                  style={{ maxWidth: 220 }}
+                                >
+                                  {product.description || "Không có mô tả"}
+                                </small>
+                              </div>
                             </div>
-                          </div>
-                        </td>
-                        <td>
-                          {categoryName}
-                          {categoryInactive && (
-                            <span className="badge bg-warning text-dark ms-2">
-                              Đã ẩn
-                            </span>
-                          )}
-                        </td>
-                        <td>{product.price?.toLocaleString("vi-VN")} ₫</td>
-                        <td>
-                          {product.stockQuantity === null ||
-                          product.stockQuantity === undefined ? (
-                            <span className="text-muted">—</span>
-                          ) : product.stockQuantity > 0 ? (
-                            <span className="text-success fw-semibold">
-                              {product.stockQuantity}
-                            </span>
-                          ) : (
-                            <span className="badge bg-danger">Hết hàng</span>
-                          )}
-                        </td>
-                        <td>
-                          {isActive ? (
-                            <span className="badge bg-success">Đang bán</span>
-                          ) : (
-                            <span className="badge bg-secondary">
-                              Ngưng bán
-                            </span>
-                          )}
-                        </td>
-                        <td className="text-end">
-                          <div className="btn-group btn-group-sm" role="group">
-                            <button
-                              type="button"
-                              className="btn btn-outline-primary"
-                              onClick={() => handleEdit(product)}
-                            >
-                              Sửa
-                            </button>
-                            {isActive ? (
-                              <button
-                                type="button"
-                                className="btn btn-outline-danger"
-                                disabled={Boolean(deletingIds[productId])}
-                                onClick={() => handleDelete(productId)}
-                                title="Ẩn sản phẩm"
-                              >
-                                {deletingIds[productId] ? "Đang ẩn..." : "Ẩn"}
-                              </button>
-                            ) : (
-                              <button
-                                type="button"
-                                className="btn btn-outline-success"
-                                disabled={Boolean(restoringIds[productId])}
-                                onClick={() => handleRestore(productId)}
-                                title="Khôi phục sản phẩm"
-                              >
-                                {restoringIds[productId]
-                                  ? "Đang khôi phục..."
-                                  : "Khôi phục"}
-                              </button>
+                          </td>
+                          <td>
+                            {categoryName}
+                            {categoryInactive && (
+                              <span className="badge bg-warning text-dark ms-2">
+                                Đã ẩn
+                              </span>
                             )}
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+                          </td>
+                          <td>{product.price?.toLocaleString("vi-VN")} ₫</td>
+                          <td>
+                            {product.stockQuantity === null ||
+                            product.stockQuantity === undefined ? (
+                              <span className="text-muted">—</span>
+                            ) : product.stockQuantity > 0 ? (
+                              <span className="text-success fw-semibold">
+                                {product.stockQuantity}
+                              </span>
+                            ) : (
+                              <span className="badge bg-danger">Hết hàng</span>
+                            )}
+                          </td>
+                          <td>
+                            {isActive ? (
+                              <span className="badge bg-success">Đang bán</span>
+                            ) : (
+                              <span className="badge bg-secondary">
+                                Ngưng bán
+                              </span>
+                            )}
+                          </td>
+                          <td className="text-end">
+                            <div
+                              className="btn-group btn-group-sm"
+                              role="group"
+                            >
+                              <button
+                                type="button"
+                                className="btn btn-outline-primary"
+                                onClick={() => handleEdit(product)}
+                              >
+                                Sửa
+                              </button>
+                              {isActive ? (
+                                <button
+                                  type="button"
+                                  className="btn btn-outline-danger"
+                                  disabled={Boolean(deletingIds[productId])}
+                                  onClick={() => handleDelete(productId)}
+                                  title="Ẩn sản phẩm"
+                                >
+                                  {deletingIds[productId] ? "Đang ẩn..." : "Ẩn"}
+                                </button>
+                              ) : (
+                                <button
+                                  type="button"
+                                  className="btn btn-outline-success"
+                                  disabled={Boolean(restoringIds[productId])}
+                                  onClick={() => handleRestore(productId)}
+                                  title="Khôi phục sản phẩm"
+                                >
+                                  {restoringIds[productId]
+                                    ? "Đang khôi phục..."
+                                    : "Khôi phục"}
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="d-flex justify-content-center align-items-center gap-2 mt-4">
+                  <button
+                    className="btn btn-outline-secondary btn-sm"
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                  >
+                    « Trước
+                  </button>
+
+                  <div className="d-flex gap-1">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                      (pageNum) => {
+                        // Show first page, last page, current page, and pages around current
+                        if (
+                          pageNum === 1 ||
+                          pageNum === totalPages ||
+                          (pageNum >= currentPage - 1 &&
+                            pageNum <= currentPage + 1)
+                        ) {
+                          return (
+                            <button
+                              key={pageNum}
+                              className={`btn btn-sm ${
+                                currentPage === pageNum
+                                  ? "btn-primary"
+                                  : "btn-outline-secondary"
+                              }`}
+                              onClick={() => handlePageChange(pageNum)}
+                            >
+                              {pageNum}
+                            </button>
+                          );
+                        } else if (
+                          pageNum === currentPage - 2 ||
+                          pageNum === currentPage + 2
+                        ) {
+                          return (
+                            <span key={pageNum} className="px-2">
+                              ...
+                            </span>
+                          );
+                        }
+                        return null;
+                      }
+                    )}
+                  </div>
+
+                  <button
+                    className="btn btn-outline-secondary btn-sm"
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                  >
+                    Sau »
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
