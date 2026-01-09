@@ -49,6 +49,7 @@ const AdminProducts = () => {
   const [restoringIds, setRestoringIds] = useState({});
   const [uploading, setUploading] = useState(false);
   const [showInactive, setShowInactive] = useState(false); // Filter for inactive products
+  const [searchTerm, setSearchTerm] = useState(""); // Search term for filtering products
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
@@ -57,21 +58,40 @@ const AdminProducts = () => {
     [products]
   );
 
-  // Filter products based on active status
+  // Filter products based on active status and search term
   const filteredProducts = useMemo(() => {
-    if (showInactive) {
-      return normalizedProducts; // Show all products
-    }
-    // Check both 'active' and 'isActive' for compatibility
-    return normalizedProducts.filter(
-      (p) => p.active !== false && p.isActive !== false
-    );
-  }, [normalizedProducts, showInactive]);
+    let filtered = normalizedProducts;
 
-  // Reset to page 1 when filter changes
+    // Filter by active status
+    if (!showInactive) {
+      // Check both 'active' and 'isActive' for compatibility
+      filtered = filtered.filter(
+        (p) => p.active !== false && p.isActive !== false
+      );
+    }
+
+    // Filter by search term
+    if (searchTerm.trim()) {
+      const searchLower = searchTerm.toLowerCase().trim();
+      filtered = filtered.filter((p) => {
+        const name = (p.name || "").toLowerCase();
+        const productId = (p.productId || p.id || "").toString().toLowerCase();
+        const description = (p.description || "").toLowerCase();
+        return (
+          name.includes(searchLower) ||
+          productId.includes(searchLower) ||
+          description.includes(searchLower)
+        );
+      });
+    }
+
+    return filtered;
+  }, [normalizedProducts, showInactive, searchTerm]);
+
+  // Reset to page 1 when filter or search changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [showInactive]);
+  }, [showInactive, searchTerm]);
 
   // Pagination calculations
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
@@ -557,28 +577,57 @@ const AdminProducts = () => {
         </div>
 
         <div className="col-12 col-xl-8">
-          {/* Filter toggle for inactive products */}
-          <div className="mb-3 d-flex align-items-center gap-3">
-            <div className="form-check form-switch">
-              <input
-                className="form-check-input"
-                type="checkbox"
-                id="showInactiveProducts"
-                checked={showInactive}
-                onChange={(e) => setShowInactive(e.target.checked)}
-              />
-              <label
-                className="form-check-label"
-                htmlFor="showInactiveProducts"
-              >
-                Hiển thị sản phẩm đã ẩn
-              </label>
+          {/* Search and filter controls */}
+          <div className="mb-3">
+            <div className="row g-3 align-items-center">
+              <div className="col-md-6">
+                <div className="input-group">
+                  <span className="input-group-text">
+                    <i className="bi bi-search"></i>
+                    🔍
+                  </span>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Tìm kiếm theo tên, mã sản phẩm hoặc mô tả..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                  {searchTerm && (
+                    <button
+                      className="btn btn-outline-secondary"
+                      type="button"
+                      onClick={() => setSearchTerm("")}
+                      title="Xóa tìm kiếm"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+              </div>
+              <div className="col-md-6 d-flex align-items-center gap-3">
+                <div className="form-check form-switch">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    id="showInactiveProductsList"
+                    checked={showInactive}
+                    onChange={(e) => setShowInactive(e.target.checked)}
+                  />
+                  <label
+                    className="form-check-label"
+                    htmlFor="showInactiveProductsList"
+                  >
+                    Hiển thị sản phẩm đã ẩn
+                  </label>
+                </div>
+                <small className="text-muted">
+                  ({currentProducts.length > 0 ? startIndex + 1 : 0}-
+                  {Math.min(endIndex, filteredProducts.length)} /{" "}
+                  {filteredProducts.length} sản phẩm)
+                </small>
+              </div>
             </div>
-            <small className="text-muted">
-              (Hiển thị {currentProducts.length > 0 ? startIndex + 1 : 0}-
-              {Math.min(endIndex, filteredProducts.length)} /{" "}
-              {filteredProducts.length} sản phẩm)
-            </small>
           </div>
 
           {loadingProducts ? (
