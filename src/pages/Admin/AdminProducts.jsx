@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import {
   createAdminProduct,
   deleteAdminProduct,
@@ -24,6 +24,235 @@ const getOcopStarsFromUrl = (url) => {
     if (url === badgeUrl) return stars;
   }
   return "";
+};
+
+// Rich Text Editor Component for Product Description
+const RichTextEditor = ({ value, onChange, placeholder }) => {
+  const textareaRef = useRef(null);
+  const [showPreview, setShowPreview] = useState(false);
+
+  const insertTag = (tagStart, tagEnd = "") => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = value.substring(start, end);
+    const before = value.substring(0, start);
+    const after = value.substring(end);
+
+    const newText = before + tagStart + selectedText + tagEnd + after;
+    onChange(newText);
+
+    // Set cursor position after insertion
+    setTimeout(() => {
+      textarea.focus();
+      const newCursorPos =
+        start + tagStart.length + selectedText.length + tagEnd.length;
+      textarea.setSelectionRange(newCursorPos, newCursorPos);
+    }, 0);
+  };
+
+  const insertAtCursor = (text) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const before = value.substring(0, start);
+    const after = value.substring(start);
+
+    const newText = before + text + after;
+    onChange(newText);
+
+    setTimeout(() => {
+      textarea.focus();
+      const newCursorPos = start + text.length;
+      textarea.setSelectionRange(newCursorPos, newCursorPos);
+    }, 0);
+  };
+
+  const formatActions = [
+    {
+      icon: "bi-type-bold",
+      title: "In đậm (Ctrl+B)",
+      action: () => insertTag("<strong>", "</strong>"),
+    },
+    {
+      icon: "bi-type-italic",
+      title: "In nghiêng (Ctrl+I)",
+      action: () => insertTag("<em>", "</em>"),
+    },
+    {
+      icon: "bi-type-underline",
+      title: "Gạch chân",
+      action: () => insertTag("<u>", "</u>"),
+    },
+    { type: "divider" },
+    {
+      icon: "bi-type-h3",
+      title: "Tiêu đề H3",
+      action: () => insertTag("<h3>", "</h3>"),
+    },
+    {
+      icon: "bi-type-h4",
+      title: "Tiêu đề H4",
+      action: () => insertTag("<h4>", "</h4>"),
+    },
+    { type: "divider" },
+    {
+      icon: "bi-list-ul",
+      title: "Danh sách",
+      action: () => insertTag("<ul>\n  <li>", "</li>\n</ul>"),
+    },
+    {
+      icon: "bi-list-ol",
+      title: "Danh sách số",
+      action: () => insertTag("<ol>\n  <li>", "</li>\n</ol>"),
+    },
+    {
+      icon: "bi-text-paragraph",
+      title: "Đoạn văn",
+      action: () => insertTag("<p>", "</p>"),
+    },
+    { type: "divider" },
+    {
+      icon: "bi-link-45deg",
+      title: "Chèn liên kết",
+      action: () => {
+        const url = prompt("Nhập URL:");
+        if (url) {
+          const textarea = textareaRef.current;
+          const selectedText =
+            value.substring(textarea.selectionStart, textarea.selectionEnd) ||
+            "Nhấn vào đây";
+          insertTag(`<a href="${url}" target="_blank">`, "</a>");
+        }
+      },
+    },
+    {
+      icon: "bi-image",
+      title: "Chèn ảnh",
+      action: () => {
+        const url = prompt("Nhập URL ảnh:");
+        if (url) {
+          insertAtCursor(
+            `<img src="${url}" alt="Mô tả ảnh" style="max-width: 100%; height: auto;" />`
+          );
+        }
+      },
+    },
+    { type: "divider" },
+    {
+      icon: "bi-blockquote-left",
+      title: "Trích dẫn",
+      action: () => insertTag("<blockquote>", "</blockquote>"),
+    },
+    {
+      icon: "bi-hr",
+      title: "Đường kẻ ngang",
+      action: () => insertAtCursor("\n<hr />\n"),
+    },
+  ];
+
+  const handleKeyDown = (e) => {
+    if (e.ctrlKey || e.metaKey) {
+      if (e.key === "b") {
+        e.preventDefault();
+        insertTag("<strong>", "</strong>");
+      } else if (e.key === "i") {
+        e.preventDefault();
+        insertTag("<em>", "</em>");
+      }
+    }
+  };
+
+  return (
+    <div className="rich-text-editor">
+      {/* Toolbar */}
+      <div className="editor-toolbar d-flex flex-wrap gap-1 p-2 bg-light border rounded-top">
+        {formatActions.map((action, index) =>
+          action.type === "divider" ? (
+            <div
+              key={index}
+              className="vr mx-1"
+              style={{ height: "24px" }}
+            ></div>
+          ) : (
+            <button
+              key={index}
+              type="button"
+              className="btn btn-sm btn-outline-secondary"
+              title={action.title}
+              onClick={action.action}
+              style={{ padding: "4px 8px" }}
+            >
+              <i className={`bi ${action.icon}`}></i>
+            </button>
+          )
+        )}
+        <div className="ms-auto">
+          <button
+            type="button"
+            className={`btn btn-sm ${
+              showPreview ? "btn-primary" : "btn-outline-primary"
+            }`}
+            onClick={() => setShowPreview(!showPreview)}
+            title="Xem trước"
+          >
+            <i className="bi bi-eye me-1"></i>
+            {showPreview ? "Ẩn xem trước" : "Xem trước"}
+          </button>
+        </div>
+      </div>
+
+      {/* Editor */}
+      <textarea
+        ref={textareaRef}
+        className="form-control rounded-0 rounded-bottom"
+        rows={8}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onKeyDown={handleKeyDown}
+        placeholder={placeholder}
+        style={{
+          fontFamily: "monospace",
+          fontSize: "14px",
+          borderTop: "none",
+          borderTopLeftRadius: 0,
+          borderTopRightRadius: 0,
+        }}
+      />
+
+      {/* Preview */}
+      {showPreview && (
+        <div className="mt-3">
+          <div className="d-flex align-items-center mb-2">
+            <h6 className="mb-0">
+              <i className="bi bi-eye me-2"></i>
+              Xem trước mô tả
+            </h6>
+          </div>
+          <div
+            className="border rounded p-3 bg-white"
+            style={{
+              minHeight: "150px",
+              maxHeight: "300px",
+              overflow: "auto",
+            }}
+            dangerouslySetInnerHTML={{
+              __html: value || "<em class='text-muted'>Chưa có mô tả</em>",
+            }}
+          />
+        </div>
+      )}
+
+      {/* Quick tips */}
+      <div className="form-text mt-2">
+        <strong>Mẹo:</strong> Sử dụng tiêu đề, danh sách và đoạn văn để mô tả
+        sản phẩm rõ ràng hơn. Thêm ảnh minh họa nếu cần.
+      </div>
+    </div>
+  );
 };
 
 const initialProductForm = {
@@ -535,18 +764,13 @@ const AdminProducts = () => {
                   )}
                 </div>
                 <div className="mb-3">
-                  <label className="form-label">Mô tả</label>
-                  <textarea
-                    className="form-control"
-                    rows={3}
+                  <label className="form-label">Mô tả sản phẩm</label>
+                  <RichTextEditor
                     value={form.description}
-                    onChange={(event) =>
-                      setForm((prev) => ({
-                        ...prev,
-                        description: event.target.value,
-                      }))
+                    onChange={(newValue) =>
+                      setForm((prev) => ({ ...prev, description: newValue }))
                     }
-                    placeholder="Mô tả ngắn gọn"
+                    placeholder="Nhập mô tả chi tiết về sản phẩm..."
                   />
                 </div>
                 <div className="d-flex gap-2">
@@ -584,7 +808,6 @@ const AdminProducts = () => {
                 <div className="input-group">
                   <span className="input-group-text">
                     <i className="bi bi-search"></i>
-                    🔍
                   </span>
                   <input
                     type="text"
@@ -702,10 +925,27 @@ const AdminProducts = () => {
                                   {product.name}
                                 </p>
                                 <small
-                                  className="text-muted text-truncate d-block"
-                                  style={{ maxWidth: 220 }}
+                                  className="text-muted d-block"
+                                  style={{
+                                    maxWidth: 220,
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    display: "-webkit-box",
+                                    WebkitLineClamp: 2,
+                                    WebkitBoxOrient: "vertical",
+                                  }}
                                 >
-                                  {product.description || "Không có mô tả"}
+                                  {product.description ? (
+                                    <span
+                                      dangerouslySetInnerHTML={{
+                                        __html: product.description
+                                          .replace(/<[^>]*>/g, " ")
+                                          .substring(0, 100),
+                                      }}
+                                    />
+                                  ) : (
+                                    "Không có mô tả"
+                                  )}
                                 </small>
                               </div>
                             </div>
